@@ -60,7 +60,7 @@ Actions are generally goals, such as harvest that source (and move if necessary)
 structure, or claim that controller. The executor takes one move towards or action on
 the goal each tick, and the policy re-picks its goal every tick. The network is saved from difficult intricacies such as pathfinding, which saved me a lot of training time and params, and is a lot like tool calls with LLMs.
 
-## Training and Rollouts
+## Rollouts
 
 [xxscreeps](https://github.com/laverdet/xxscreeps) lets me do fast parallel rollouts. I think
 I did 12 games at once for 512 steps, taking around a couple of seconds. If I used
@@ -68,11 +68,11 @@ the normal Screeps engine it would have taken days to train. The speed partly av
 large scale parallelism that Ben Bartlett had to use in
 [Overmind-RL](https://github.com/bencbartlett/Overmind-RL/tree/master).
 
-An important part of this setup is that runs start from initial states from a 20,000-tick timeline. This allows the model to see diverse states without having to play them start to finish each time. Runs went for 1.25 million steps, or about 2 hours wall-clock.
+An important part of this setup is that runs start from initial states from a 20,000-tick timeline. This allows the model to see diverse states without having to play them start to finish each time. Runs went for a combined 1.25 million ticks, or about 2 hours wall-clock.
 
 ![Two PPO runs sharing a cloned checkpoint, seed, optimizer and code fingerprint, differing only in start states](screeps-training-curves.webp "Sampled starts versus tick-0 starts.")
 
-This is a comparison of sampled start states I went with versus always starting from tick 0. Sampled starts compensate for short rollouts to allow the model to still experience diverse levels of economy.
+This is a comparison of sampled start states I went with versus always starting from tick 0. Sampled starts compensate for short rollouts to allow the model to still experience and learn diverse levels of economy.
 
 | Greedy eval | Sampled starts | Tick-zero only |
 |---|---:|---:|
