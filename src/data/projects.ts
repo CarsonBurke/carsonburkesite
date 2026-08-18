@@ -1,6 +1,4 @@
-import screepsEconomy from "../assets/media/screeps-ppo-economy.webp";
-import tradingAssets from "../assets/media/tb-6-ticker-assets-benchmarked.webp";
-import tradingBuySell from "../assets/media/tb-msft-buy-sell.webp";
+import { media, type Media } from "../lib/media.ts";
 
 export type Project = {
   id: string;
@@ -12,7 +10,7 @@ export type Project = {
   details: string[];
   caveat?: string;
   links: { label: string; href: string; external?: boolean }[];
-  media?: { src: string; alt: string; caption: string }[];
+  media?: (Media & { alt: string; caption: string })[];
 };
 
 export const PROJECTS: Project[] = [
@@ -45,13 +43,13 @@ export const PROJECTS: Project[] = [
     ],
     media: [
       {
-        src: tradingAssets,
+        ...media("tb-6-ticker-assets-benchmarked.webp"),
         alt: "Terminal UI plotting held assets, cash and total portfolio value against a benchmark index",
         caption:
           "Six tickers in the training TUI: assets red, cash green, total blue, benchmark index yellow.",
       },
       {
-        src: tradingBuySell,
+        ...media("tb-msft-buy-sell.webp"),
         alt: "Terminal UI marking buy and sell decisions along a price series",
         caption:
           "Buys and sells the agent placed on a randomly chosen active stretch of MSFT.",
@@ -64,7 +62,7 @@ export const PROJECTS: Project[] = [
     kicker: "Day job · Electron · TypeScript",
     summary:
       "Redact deletes what you have already posted — across more than 35 platforms — with the scanning and deleting done on your own machine instead of on somebody's server.",
-    tags: ["TypeScript", "React", "Electron", "Rust", "Playwright"],
+    tags: ["TypeScript", "React", "Electron", "Design systems"],
     stats: [
       { label: "Users, per redact.dev", value: "1M+" },
       { label: "Supported services", value: "35+" },
@@ -72,8 +70,8 @@ export const PROJECTS: Project[] = [
     ],
     details: [
       "I work on the desktop client: the shared component library the app is assembled from, the data-broker dashboards and sortable tables, the local archive search surfaces, and the selects and date pickers everything else depends on.",
-      "Also per-platform deletion engines, and the fixture generators that stand up realistic accounts to test them — you cannot verify a Messenger cleanup without a Messenger account full of junk to clean up.",
-      "And the service pages and FAQs on the marketing site, generated from the same platform definitions the app itself uses, so the list cannot drift.",
+      "Also per-platform deletion engines, and the test-data tooling that makes them verifiable — you cannot check that a cleanup worked without something there to clean up.",
+      "And the public service pages and FAQs: what Redact can remove on each platform, kept in step with what the app can actually do.",
       "A recurring constraint: stay debuggable without ever putting a user's content or credentials into a log line.",
     ],
     links: [{ label: "redact.dev", href: "https://redact.dev", external: true }],
@@ -87,7 +85,7 @@ export const PROJECTS: Project[] = [
     tags: ["PyTorch", "PPO", "ViT", "Transformers"],
     stats: [
       { label: "Actor / critic", value: "1.57M / 1.49M" },
-      { label: "Held-out score per tick", value: "82.7" },
+      { label: "Held-out score, five scenarios", value: "82.7" },
       { label: "Parallel worlds", value: "12" },
       { label: "Env steps/s, compiled", value: "876" },
     ],
@@ -95,7 +93,7 @@ export const PROJECTS: Project[] = [
       "Actions are goals, not keystrokes: harvest that source, transfer to that structure, claim that controller. A deterministic executor handles pathfinding and traffic, so the network never spends capacity rediscovering what a search does better.",
       "Legality is part of the action definition. Candidate masks come from the engine's own validators, so an illegal action is a defect rather than noise — 2 of them in a recorded 344,078.",
       "The critic predicts a 409-bin HL-Gauss distribution over signed-log returns instead of a scalar, because an empty room and a mature colony are not the same regression problem.",
-      "Start states come from an event-stratified reservoir. Two runs matched on checkpoint, seed and optimizer and differing only in start states scored 82.7 against 20.0 per tick on held-out worlds.",
+      "Start states come from an event-stratified reservoir. Two runs matched on checkpoint, seed and optimizer and differing only in start states scored 82.7 against 20.0 summed across five held-out scenarios.",
       "CUDA-graphing only the per-tick forward, and leaving the minibatch path eager, moved collection from about 531 to about 876 environment steps per second on one RTX 5090.",
     ],
     links: [
@@ -108,7 +106,7 @@ export const PROJECTS: Project[] = [
     ],
     media: [
       {
-        src: screepsEconomy,
+        ...media("screeps-ppo-economy.webp"),
         alt: "Screeps room with the reinforced policy saturating both energy sources and hauling to the controller",
         caption:
           "The reinforced policy: about 30 creeps, both sources saturated, a hauling lane to the controller.",
@@ -125,22 +123,23 @@ export const PROJECTS: Project[] = [
     stats: [
       { label: "Research families", value: "~25" },
       { label: "Commits in the fork", value: "1,123" },
-      { label: "Steps per run", value: "8M" },
+      { label: "Standard run", value: "8M steps" },
     ],
     details: [
-      "Best result so far: state-dependent Beta exploration noise on TD7, 17,122 against 16,043 at 1M steps. Both follow-up fixes regressed, so the line is closed rather than quietly retried.",
-      "An HL-Gauss critic on TD7 cost 30% — 5,885 against 8,086. Right-sizing the support made it slightly worse, which falsified my own explanation and replaced it with a better one.",
-      "Fourteen transformer-trunk variants: token-MLP plus Peri-LN plus Xavier on the trunk reached 4,843.9 ±66.0, against 3,962.8 ±158.5 for pre-norm alone. Xavier on the heads, borrowed from language-model practice, lost 141 points.",
+      "Best result so far: a state-dependent noise head on TD7, entropy confined to the actor loss. 17,122 against 16,043 at 1M steps, ahead of the baseline at every checkpoint.",
+      "Bounded Beta noise was the more interesting hypothesis and lost anyway. Both single-change fixes for its late-game deficit regressed, so I closed the line and wrote down that the Gaussian edge is still mechanistically unexplained.",
+      "An HL-Gauss critic on TD7 cost 30% and got killed at 65k steps, 5,885 against 8,086. Right-sizing the support made it slightly worse, which falsified my own support-geometry explanation and pointed at the control path instead.",
+      "Fourteen transformer-trunk variants: token-MLP plus Peri-LN plus Xavier on the trunk reached 4,843.9 ±66.0, against 3,962.8 ±158.5 for pre-norm alone. Xavier on the heads, borrowed from language-model init practice, never got off the floor at −141.4.",
       "A cheap ridge probe retired a whole planned direction: the JEPA latent explained about 25 fewer points of value variance than the raw trunk features at every checkpoint, and deleting the encoder entirely matched the best version that kept it.",
       "I also audited one of my own families and found its best result roughly 14x below my own frontier, which invalidated every comparison inside its ledger. That is written down too.",
     ],
     caveat:
-      "Single seed, HalfCheetah-v4, scored on the last 20 episodes. Engineering ablations, not benchmark claims.",
+      "One seed, HalfCheetah-v4, means over the last 20 or 30 episodes depending on the ledger. The ± figures are within-run episode intervals, not seed variance — engineering ablations, not benchmark claims.",
     links: [
       { label: "Fork", href: "https://github.com/CarsonBurke/cleanrl", external: true },
       {
         label: "Ablation ledger",
-        href: "https://github.com/CarsonBurke/cleanrl/blob/master/idbd/ABLATIONS.md",
+        href: "https://github.com/CarsonBurke/cleanrl/blob/master/cleanrl/idbd/ABLATIONS.md",
         external: true,
       },
     ],

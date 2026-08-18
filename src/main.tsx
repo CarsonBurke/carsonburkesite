@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import { App } from "./App.tsx";
 import "./index.css";
+import { ErrorPage } from "./routes/ErrorPage.tsx";
 import { Home } from "./routes/Home.tsx";
 import { NotFound } from "./routes/NotFound.tsx";
 
@@ -10,6 +11,10 @@ const router = createBrowserRouter(
   [
     {
       element: <App />,
+      errorElement: <ErrorPage />,
+      // A direct load of a post URL starts on a lazy route; without a fallback
+      // react-router renders nothing at all until the chunk arrives.
+      hydrateFallbackElement: <div className="min-h-screen" />,
       children: [
         { index: true, element: <Home /> },
         {

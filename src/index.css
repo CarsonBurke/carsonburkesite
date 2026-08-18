@@ -98,10 +98,13 @@
   --warning-color: #905400;
   --error-color: #c30000;
 
+  /*
+   * libadwaita dims to 55%, but its foreground is pure black; ours is already
+   * rgb(0 0 6 / 80%), so 55% composites to 3.2:1 and fails WCAG AA. 70% puts
+   * caption text back above 4.5:1 on both the window and card backgrounds.
+   */
   --border-opacity: 15%;
-  --dim-opacity: 55%;
-  --border-color: color-mix(in srgb, currentColor var(--border-opacity), transparent);
-
+  --dim-opacity: 70%;
   /* widgets/_misc.scss: the card shadow is three stacked layers, not one blur. */
   --card-shadow:
     0 0 0 1px rgb(0 0 6 / 3%), 0 1px 3px 1px rgb(0 0 6 / 7%),
@@ -132,6 +135,7 @@
   --error-color: #ff938c;
 
   --card-shadow: 0 0 0 1px rgb(0 0 6 / 10%), 0 1px 3px 1px rgb(0 0 6 / 20%);
+  --dim-opacity: 55%;
 }
 
 /* GNOME's selectable accents, standalone values per theme. */
@@ -220,7 +224,7 @@
     /* 15px ~= the 11pt Adwaita Sans system font at 96dpi. */
     font-size: 15px;
     scroll-behavior: smooth;
-    scroll-padding-top: 5rem;
+    scroll-padding-top: 4.5rem;
   }
 
   @media (prefers-reduced-motion: reduce) {

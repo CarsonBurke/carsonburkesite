@@ -1,20 +1,12 @@
 import type { Element } from "hast";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { media } from "../lib/media.ts";
 import { ExternalIcon } from "./Icon.tsx";
 
-/** Media referenced from markdown by bare filename, resolved to hashed build URLs. */
-const MEDIA = Object.fromEntries(
-  Object.entries(
-    import.meta.glob<string>("../assets/media/*", {
-      eager: true,
-      query: "?url",
-      import: "default",
-    }),
-  ).map(([path, url]) => [path.split("/").pop() as string, url]),
-);
+const FIGURE_SHADOW = "0 0 0 1px var(--card-shade-color)";
 
-/** ```pipeline — one stage per line, drawn as chained Adwaita chips. */
+/** ```pipeline — one stage per line, `·`-separated fields, drawn as chained chips. */
 function Pipeline({ source }: { source: string }) {
   const stages = source
     .trim()
@@ -37,7 +29,7 @@ function Pipeline({ source }: { source: string }) {
           )}
           <div
             className="card flex min-w-[8.5rem] flex-col justify-center px-3 py-2"
-            style={{ boxShadow: "0 0 0 1px var(--card-shade-color)" }}
+            style={{ boxShadow: FIGURE_SHADOW }}
           >
             <span className="caption-heading">{parts[0]}</span>
             {parts.slice(1).map((part) => (
@@ -52,31 +44,38 @@ function Pipeline({ source }: { source: string }) {
   );
 }
 
-/** ```gallery — `file.webp :: caption` per line, laid out as a figure row. */
+/** ```gallery — `file.webp :: caption [:: alt]` per line, laid out as a figure row. */
 function Gallery({ source }: { source: string }) {
   const items = source
     .trim()
     .split("\n")
     .map((line) => {
-      const [file = "", caption = ""] = line.split("::").map((part) => part.trim());
-      return { file, caption };
+      const [file = "", caption = "", alt = ""] = line.split("::").map((part) => part.trim());
+      return { file, caption, alt };
     });
 
   return (
     <div className="my-8 grid gap-4 sm:grid-cols-2">
-      {items.map(({ file, caption }) => (
-        <figure key={file} className="m-0">
-          <img
-            src={MEDIA[file] ?? file}
-            alt={caption}
-            loading="lazy"
-            decoding="async"
-            className="w-full rounded-[12px]"
-            style={{ boxShadow: "0 0 0 1px var(--card-shade-color)" }}
-          />
-          <figcaption className="caption dimmed mt-2">{caption}</figcaption>
-        </figure>
-      ))}
+      {items.map(({ file, caption, alt }) => {
+        const { src, width, height } = media(file);
+        return (
+          <figure key={file} className="m-0">
+            <img
+              src={src}
+              width={width}
+              height={height}
+              // Empty alt when the caption already carries the description, so a
+              // screen reader reads the sentence once instead of twice.
+              alt={alt}
+              loading="lazy"
+              decoding="async"
+              className="h-auto w-full rounded-[12px]"
+              style={{ boxShadow: FIGURE_SHADOW }}
+            />
+            <figcaption className="caption dimmed mt-2">{caption}</figcaption>
+          </figure>
+        );
+      })}
     </div>
   );
 }
@@ -95,13 +94,28 @@ function fenceLanguage(node: Element | undefined) {
     ?.slice("language-".length);
 }
 
+const loneImage = (node: Element | undefined) => {
+  const only = node?.children.length === 1 ? node.children[0] : undefined;
+  return only?.type === "element" && only.tagName === "img" ? only : undefined;
+};
+
 const components: Components = {
   h2: ({ children }) => <h2 className="title-2 mt-12 mb-3">{children}</h2>,
   h3: ({ children }) => <h3 className="title-4 mt-8 mb-2">{children}</h3>,
   p: ({ children, node }) => {
-    // A lone image becomes a <figure>, which may not sit inside a <p>.
-    const only = node?.children.length === 1 ? node.children[0] : undefined;
-    if (only?.type === "element" && only.tagName === "img") return <>{children}</>;
+    // A standalone image becomes a figure; a <figure> may not sit inside a <p>.
+    const image = loneImage(node);
+    if (image) {
+      const caption = image.properties.title;
+      return (
+        <figure className="my-8">
+          {children}
+          {typeof caption === "string" && (
+            <figcaption className="caption dimmed mt-2">{caption}</figcaption>
+          )}
+        </figure>
+      );
+    }
     return <p className="my-4 leading-[1.65]">{children}</p>;
   },
   ul: ({ children }) => <ul className="my-4 list-disc space-y-2 pl-5">{children}</ul>,
@@ -130,20 +144,19 @@ const components: Components = {
       </a>
     );
   },
-  img: ({ src, alt, title }) => {
-    const file = typeof src === "string" ? src : "";
+  img: ({ src, alt }) => {
+    const { src: resolved, width, height } = media(typeof src === "string" ? src : "");
     return (
-      <figure className="my-8">
-        <img
-          src={MEDIA[file] ?? file}
-          alt={alt ?? ""}
-          loading="lazy"
-          decoding="async"
-          className="w-full rounded-[12px]"
-          style={{ boxShadow: "0 0 0 1px var(--card-shade-color)" }}
-        />
-        {title && <figcaption className="caption dimmed mt-2">{title}</figcaption>}
-      </figure>
+      <img
+        src={resolved}
+        width={width}
+        height={height}
+        alt={alt ?? ""}
+        loading="lazy"
+        decoding="async"
+        className="h-auto w-full rounded-[12px]"
+        style={{ boxShadow: FIGURE_SHADOW }}
+      />
     );
   },
   table: ({ children }) => (
@@ -191,16 +204,17 @@ const components: Components = {
         </code>
       );
 
+    // whitespace-pre because the wrapping <pre> is replaced by a styled div.
     return (
-      <code className="block overflow-x-auto p-4 font-mono text-[0.85rem] leading-relaxed">
+      <code className="block overflow-x-auto p-4 font-mono text-[0.85rem] leading-relaxed whitespace-pre">
         {children}
       </code>
     );
   },
   pre: ({ children, node }) => {
-    // Block-level custom fences render their own layout; a card wrapper would box them.
-    if (fenceLanguage(node) === "pipeline" || fenceLanguage(node) === "gallery")
-      return <>{children}</>;
+    const language = fenceLanguage(node);
+    // Block-level custom fences render their own layout; a card would box them.
+    if (language === "pipeline" || language === "gallery") return <>{children}</>;
     return <div className="card my-6 overflow-hidden">{children}</div>;
   },
 };

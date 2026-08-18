@@ -73,11 +73,12 @@ stops appearing and gets unlearned.
 
 Both runs stop at update 204 and global step 1,259,520. The tick-zero-only run falls to 8
 creeps by update 60 and settles near a score of 4; the reservoir run holds 27 to 35 creeps
-and climbs past 15. Held-out evaluation on fresh 20,000-tick worlds agrees:
+and climbs past 15. Held-out evaluation agrees, summed over the five fresh-world scenarios
+further down:
 
 | | Reservoir | Tick-zero only |
 |---|---:|---:|
-| Score per tick | 82.7 | 20.0 |
+| Score per tick, five scenarios summed | 82.7 | 20.0 |
 | Controller progress rate | 27.2 | 0.1 |
 | Remote-room harvesting | 32,228 | 0 |
 | Remote energy delivered home | 311 | 0 |
@@ -109,6 +110,11 @@ touched, decoded greedily, measuring `harvested_energy + controller_progress` pe
 | `seed_claimer`, plus 2 room claims | 17.4 |
 | `seed_full`, an inherited mature colony | 13.1 |
 | `seed_outpost`, a neutral outpost | 16.6 |
+
+One caveat that applies to every number and clip above: they all predate the current
+objective and the move to a single teacher. Back then cloning learned from my hand-written
+planner as well as The International; now the planner is only a baseline to beat, and a
+rerun from the real teacher alone is in progress.
 
 ## What I'd do with a bigger budget
 

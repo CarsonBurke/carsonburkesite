@@ -46,7 +46,7 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section id={id} className="mx-auto max-w-3xl scroll-mt-20 px-4 pb-14">
+    <section id={id} className="mx-auto max-w-3xl scroll-mt-[4.5rem] px-4 pb-14">
       <div className="mb-3 px-1">
         <h2 className="title-3">{title}</h2>
         {description && <p className="caption dimmed mt-1">{description}</p>}
@@ -68,8 +68,7 @@ function Hero() {
       <p className="mt-4 max-w-[38rem] text-[1.15rem] leading-[1.55]">
         I train small models on one GPU and write the tooling that makes the runs
         trustworthy. Trading agents in Rust, a neural policy that plays a whole Screeps
-        colony, a few hundred ablations I keep an honest ledger for, and desktop bits for
-        Linux.
+        colony, ablation ledgers with the failed ideas left in, and desktop bits for Linux.
       </p>
 
       <div className="mt-7 flex flex-wrap items-center gap-2">
@@ -89,6 +88,12 @@ function Hero() {
           className="adw-button pill"
           aria-label="Copy email address"
           onClick={() => {
+            // navigator.clipboard is undefined on insecure origins, and the
+            // property access itself would throw before any promise exists.
+            if (!navigator.clipboard) {
+              toast("Could not reach the clipboard");
+              return;
+            }
             void navigator.clipboard
               .writeText(EMAIL)
               .then(() => toast("Email address copied"))
@@ -127,7 +132,7 @@ function Writing() {
             className="row-activatable flex items-center gap-4 px-4 py-4 no-underline"
           >
             <div className="min-w-0 flex-1">
-              <p className="heading">{post.title}</p>
+              <h3 className="heading">{post.title}</h3>
               <p className="dimmed mt-1 text-[0.95rem] leading-[1.5]">{post.summary}</p>
               <p className="caption dimmed numeric mt-2">
                 {formatDate(post.date)} · {post.minutes} min read
@@ -179,18 +184,23 @@ function ProjectCard({ project }: { project: Project }) {
           ))}
         </div>
 
+        {/* The caveat belongs beside the numbers it qualifies, not behind a disclosure. */}
+        {project.caveat && <p className="caption dimmed mt-3">{project.caveat}</p>}
+
         {project.media && (
           <div className="mt-5 grid gap-4">
-            {project.media.map(({ src, alt, caption }) => (
+            {project.media.map(({ src, width, height, alt, caption }) => (
               <figure key={src} className="m-0">
                 {/* Terminal captures are far wider than the column; a click gets the pixels back. */}
                 <a href={src} target="_blank" rel="noreferrer" className="block">
                   <img
                     src={src}
+                    width={width}
+                    height={height}
                     alt={alt}
                     loading="lazy"
                     decoding="async"
-                    className="w-full cursor-zoom-in rounded-[9px]"
+                    className="h-auto w-full cursor-zoom-in rounded-[9px]"
                     style={{ boxShadow: "0 0 0 1px var(--card-shade-color)" }}
                   />
                 </a>
@@ -254,7 +264,6 @@ function ProjectCard({ project }: { project: Project }) {
               </span>
             ))}
           </div>
-          {project.caveat && <p className="caption dimmed mt-4">{project.caveat}</p>}
         </div>
       )}
     </article>
@@ -276,7 +285,7 @@ function Smaller() {
             className="row-activatable flex items-center gap-4 px-4 py-3 no-underline"
           >
             <div className="min-w-0 flex-1">
-              <p className="heading">{name}</p>
+              <h3 className="heading">{name}</h3>
               <p className="dimmed mt-1 text-[0.95rem] leading-[1.5]">{note}</p>
             </div>
             <ExternalIcon size={14} className="dimmed shrink-0" />

@@ -18,12 +18,12 @@ export type Post = {
 
 /** Frontmatter here is flat `key: value` lines, so a YAML parser would be dead weight. */
 function parse(slug: string, raw: string): Post {
-  const match = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(raw);
+  const match = /^---\r?\n([\s\S]*?)\r?\n---\r?\n([\s\S]*)$/.exec(raw);
   if (!match) throw new Error(`${slug}: missing frontmatter`);
   const [, header = "", body = ""] = match;
 
   const fields: Record<string, string> = {};
-  for (const line of header.split("\n")) {
+  for (const line of header.split(/\r?\n/)) {
     const separator = line.indexOf(":");
     if (separator === -1) continue;
     fields[line.slice(0, separator).trim()] = line.slice(separator + 1).trim();
