@@ -142,3 +142,26 @@ export function PaletteIcon({ size = 16, className }: IconProps) {
     </svg>
   );
 }
+
+/* GNOME view-list-symbolic / view-grid-symbolic. */
+export function ListIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path
+        fill="currentColor"
+        d="M2 1c-.555 0-1 .445-1 1v2c0 .555.445 1 1 1h2c.555 0 1-.445 1-1V2c0-.555-.445-1-1-1zm5 1v2h8V2zM2 6.016c-.555 0-1 .445-1 1v1.98c0 .551.445 1 1 1h2c.555 0 1-.449 1-1v-1.98c0-.555-.445-1-1-1zM7 7v2h8V7zM2 11c-.555 0-1 .445-1 1v1.98c0 .551.445 1 1 1h2c.555 0 1-.449 1-1V12c0-.555-.445-1-1-1zm5 .984V14h8v-2z"
+      />
+    </svg>
+  );
+}
+
+export function GridIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path
+        fill="currentColor"
+        d="M2 1c-.555 0-1 .445-1 1v4c0 .555.445 1 1 1h4c.555 0 1-.445 1-1V2c0-.555-.445-1-1-1zm8 0c-.555 0-1 .445-1 1v4c0 .555.445 1 1 1h4c.555 0 1-.445 1-1V2c0-.555-.445-1-1-1zM2 9c-.555 0-1 .445-1 1v4c0 .555.445 1 1 1h4c.555 0 1-.445 1-1v-4c0-.555-.445-1-1-1zm8 0c-.555 0-1 .445-1 1v4c0 .555.445 1 1 1h4c.555 0 1-.445 1-1v-4c0-.555-.445-1-1-1z"
+      />
+    </svg>
+  );
+}

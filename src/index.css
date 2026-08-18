@@ -93,6 +93,8 @@
   --popover-bg-color: #ffffff;
   --shade-color: rgb(0 0 6 / 7%);
   --thumbnail-bg-color: #ffffff;
+  --active-toggle-bg-color: #ffffff;
+  --active-toggle-fg-color: rgb(0 0 6 / 80%);
 
   --success-color: #007c3d;
   --warning-color: #905400;
@@ -129,6 +131,8 @@
   --popover-bg-color: #36363a;
   --shade-color: rgb(0 0 6 / 25%);
   --thumbnail-bg-color: #39393d;
+  --active-toggle-bg-color: rgb(255 255 255 / 20%);
+  --active-toggle-fg-color: #ffffff;
 
   --success-color: #78e9ab;
   --warning-color: #ffc252;
@@ -413,6 +417,44 @@
   }
   .adw-linked > .adw-button + .adw-button {
     box-shadow: inset 1px 0 var(--border-color);
+  }
+
+  /* widgets/_toggles.scss: AdwToggleGroup, a padded track and a raised chip. */
+  .adw-toggle-group {
+    display: inline-flex;
+    align-items: stretch;
+    padding: 3px;
+    border-radius: var(--radius-control);
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+  }
+  .adw-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 34px;
+    min-height: 28px;
+    padding: 0 8px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition:
+      background-color 120ms ease-out,
+      box-shadow 120ms ease-out;
+  }
+  .adw-toggle:hover {
+    background-color: color-mix(in srgb, currentColor 7%, transparent);
+  }
+  .adw-toggle:active {
+    background-color: color-mix(in srgb, currentColor 16%, transparent);
+  }
+  .adw-toggle[aria-checked="true"] {
+    background-color: var(--active-toggle-bg-color);
+    color: var(--active-toggle-fg-color);
+    box-shadow:
+      0 1px 3px 1px rgb(0 0 6 / 7%),
+      0 2px 6px 2px rgb(0 0 6 / 3%);
   }
 
   .osd-blur {

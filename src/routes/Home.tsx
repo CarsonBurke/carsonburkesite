@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { useCallback, useState, type KeyboardEvent, type ReactNode } from "react";
 import { Link, useHref } from "react-router";
 import {
   ChevronDownIcon,
@@ -6,6 +6,8 @@ import {
   CopyIcon,
   ExternalIcon,
   GithubIcon,
+  GridIcon,
+  ListIcon,
   MailIcon,
 } from "../components/Icon.tsx";
 import { useToast } from "../components/Toast.tsx";
@@ -38,19 +40,94 @@ export function Home() {
 function Section({
   id,
   title,
+  trailing,
   children,
 }: {
   id: string;
   title: string;
+  trailing?: ReactNode;
   children: ReactNode;
 }) {
   return (
     <section id={id} className="mx-auto max-w-5xl scroll-mt-[4.5rem] px-4 pb-14">
-      <div className="mb-3 px-1">
+      <div className="mb-3 flex items-center justify-between gap-3 px-1">
         <h2 className="title-3">{title}</h2>
+        {trailing}
       </div>
       {children}
     </section>
+  );
+}
+
+const VIEWS = ["list", "gallery"] as const;
+type ViewMode = (typeof VIEWS)[number];
+
+const VIEW_STEP: Record<string, number> = {
+  ArrowRight: 1,
+  ArrowDown: 1,
+  ArrowLeft: -1,
+  ArrowUp: -1,
+};
+
+function useRadioKeys<T extends string>(ids: readonly T[], select: (id: T) => void) {
+  return useCallback(
+    (event: KeyboardEvent<HTMLDivElement>) => {
+      const step = VIEW_STEP[event.key];
+      const index = ids.findIndex(
+        (id) => id === (event.target as HTMLElement).dataset.radioId,
+      );
+      if (index === -1) return;
+
+      let next = index;
+      if (step !== undefined) next = (index + step + ids.length) % ids.length;
+      else if (event.key === "Home") next = 0;
+      else if (event.key === "End") next = ids.length - 1;
+      else return;
+
+      event.preventDefault();
+      const id = ids[next];
+      if (!id) return;
+      select(id);
+      event.currentTarget.querySelector<HTMLElement>(`[data-radio-id="${id}"]`)?.focus();
+    },
+    [ids, select],
+  );
+}
+
+function ViewSwitcher({
+  value,
+  onChange,
+  label,
+}: {
+  value: ViewMode;
+  onChange: (view: ViewMode) => void;
+  label: string;
+}) {
+  const onKeyDown = useRadioKeys(VIEWS, onChange);
+
+  return (
+    <div
+      role="radiogroup"
+      aria-label={label}
+      onKeyDown={onKeyDown}
+      className="adw-toggle-group shrink-0"
+    >
+      {VIEWS.map((id) => (
+        <button
+          key={id}
+          type="button"
+          role="radio"
+          data-radio-id={id}
+          aria-label={id === "list" ? "List" : "Gallery"}
+          aria-checked={value === id}
+          tabIndex={value === id ? 0 : -1}
+          className="adw-toggle"
+          onClick={() => onChange(id)}
+        >
+          {id === "list" ? <ListIcon /> : <GridIcon />}
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -180,14 +257,44 @@ function Writing() {
 }
 
 function Projects() {
+  const [view, setView] = useState<ViewMode>("list");
+
   return (
-    <Section id="projects" title="Projects">
-      <div className="space-y-4">
-        {PROJECTS.map((project) => (
-          <ProjectCard key={project.id} project={project} />
-        ))}
-      </div>
+    <Section
+      id="projects"
+      title="Projects"
+      trailing={<ViewSwitcher value={view} onChange={setView} label="Projects view" />}
+    >
+      {view === "list" ? (
+        <div className="space-y-4">
+          {PROJECTS.map((project) => (
+            <ProjectCard key={project.id} project={project} />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-4 sm:grid-cols-2">
+          {PROJECTS.map((project) => (
+            <ProjectTile key={project.id} project={project} />
+          ))}
+        </div>
+      )}
     </Section>
+  );
+}
+
+function ProjectLinks({ project }: { project: Project }) {
+  return project.links.map(({ label, href, external }) =>
+    external ? (
+      <a key={href} className="adw-button no-underline" href={href} {...NEW_TAB}>
+        {label}
+        <ExternalIcon size={13} className="dimmed" />
+      </a>
+    ) : (
+      <Link key={href} className="adw-button suggested no-underline" to={href}>
+        {label}
+        <ChevronRightIcon size={13} />
+      </Link>
+    ),
   );
 }
 
@@ -246,19 +353,7 @@ function ProjectCard({ project }: { project: Project }) {
         )}
 
         <div className="mt-5 flex flex-wrap items-center gap-2">
-          {project.links.map(({ label, href, external }) =>
-            external ? (
-              <a key={href} className="adw-button no-underline" href={href} {...NEW_TAB}>
-                {label}
-                <ExternalIcon size={13} className="dimmed" />
-              </a>
-            ) : (
-              <Link key={href} className="adw-button suggested no-underline" to={href}>
-                {label}
-                <ChevronRightIcon size={13} />
-              </Link>
-            ),
-          )}
+          <ProjectLinks project={project} />
           <button
             type="button"
             className="adw-button flat ml-auto"
@@ -306,25 +401,84 @@ function ProjectCard({ project }: { project: Project }) {
   );
 }
 
-function Smaller() {
+function ProjectTile({ project }: { project: Project }) {
+  const image = project.media?.[0];
+
   return (
-    <Section id="smaller" title="Smaller things">
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        {SMALLER_THINGS.map(({ name, note, href }) => (
-          <a
-            key={href}
-            href={href}
-            className="card row-activatable flex flex-col gap-1 p-4 no-underline"
-            {...NEW_TAB}
-          >
-            <span className="heading flex items-center gap-2">
-              {name}
-              <ExternalIcon size={12} className="dimmed" />
-            </span>
-            <span className="dimmed text-[0.95rem] leading-[1.5]">{note}</span>
-          </a>
-        ))}
+    <article className="card overflow-hidden">
+      {image && (
+        <a href={image.src} className="block" {...NEW_TAB}>
+          <img
+            src={image.src}
+            width={image.width}
+            height={image.height}
+            alt={image.alt}
+            loading="lazy"
+            decoding="async"
+            className="aspect-[16/9] w-full object-cover object-top"
+          />
+        </a>
+      )}
+      <div className="p-4">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <h3 className="title-4">{project.name}</h3>
+          <span className="caption dimmed">{project.kicker}</span>
+        </div>
+        <p className="mt-2 line-clamp-3 leading-[1.5]">{project.summary}</p>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
+          <ProjectLinks project={project} />
+        </div>
       </div>
+    </article>
+  );
+}
+
+function Smaller() {
+  const [view, setView] = useState<ViewMode>("gallery");
+
+  return (
+    <Section
+      id="smaller"
+      title="Smaller things"
+      trailing={
+        <ViewSwitcher value={view} onChange={setView} label="Smaller things view" />
+      }
+    >
+      {view === "gallery" ? (
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {SMALLER_THINGS.map(({ name, note, href }) => (
+            <a
+              key={href}
+              href={href}
+              className="card row-activatable flex flex-col gap-1 p-4 no-underline"
+              {...NEW_TAB}
+            >
+              <span className="heading flex items-center gap-2">
+                {name}
+                <ExternalIcon size={12} className="dimmed" />
+              </span>
+              <span className="dimmed text-[0.95rem] leading-[1.5]">{note}</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <div className="boxed-list">
+          {SMALLER_THINGS.map(({ name, note, href }) => (
+            <a
+              key={href}
+              href={href}
+              className="row-activatable flex items-center gap-4 px-4 py-4 no-underline"
+              {...NEW_TAB}
+            >
+              <div className="min-w-0 flex-1">
+                <span className="heading">{name}</span>
+                <p className="dimmed mt-1 text-[0.95rem] leading-[1.5]">{note}</p>
+              </div>
+              <ExternalIcon size={12} className="dimmed shrink-0" />
+            </a>
+          ))}
+        </div>
+      )}
     </Section>
   );
 }
