@@ -22,7 +22,7 @@ efficient or directional.
 Then I do reinforcement learning on it. I reward it for harvesting and upgrading, and I
 expect the rest to be emergent, which sort of happens. It gets good at harvesting and
 upgrading, it runs stationary harvesters and hauling well, and it also learns to stop
-building. The rollouts are too short for it to see the benefits of building. I'm happy with
+building. The rollouts are too short for it to see the benefits of building. Overall, I'm happy with
 the results given my budget.
 
 ```youtube
@@ -47,7 +47,7 @@ the benefit, so I skipped them.
 Then there is a separate critic with 1.5M parameters, where I take a
 [VAPO](https://arxiv.org/html/2504.05118v3) style approach and make the critic Monte-Carlo,
 so it gets signal from the whole rollout for itself and for the actor's advantages. It hurts
-learning speed a bit, and it lets the model learn from returns that arrive much later.
+learning speed a bit, but it lets the model learn from returns that arrive much later.
 
 ```pipeline
 xxscreeps world | real engine | 50x50 rooms
@@ -74,7 +74,7 @@ An important part of this setup is that runs start from initial states from a 20
 
 This is a comparison of sampled start states I went with versus always starting from tick 0. Sampled starts compensates for short rollouts to allow the model to still experience diverse levels of economy.
 
-| | Sampled starts | Tick-zero only |
+| Greedy eval | Sampled starts | Tick-zero only |
 |---|---:|---:|
 | Score per tick | 82.7 | 20.0 |
 | Controller progress rate | 27.2 | 0.1 |
