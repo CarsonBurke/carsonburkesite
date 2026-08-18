@@ -70,9 +70,9 @@ large scale parallelism that Ben Bartlett had to use in
 
 An important part of this setup is that runs start from initial states from a 20,000-tick timeline. This allows the model to see diverse states without having to play them start to finish each time. Runs went for 1.25 million steps, or about 2 hours wall-clock.
 
-![Two PPO runs sharing a cloned checkpoint, seed, optimizer and code fingerprint, differing only in start states](screeps-training-curves.webp "Same checkpoint, same seed, same optimizer, same code. The only difference is where episodes start.")
+![Two PPO runs sharing a cloned checkpoint, seed, optimizer and code fingerprint, differing only in start states](screeps-training-curves.webp "Sampled starts versus tick-0 starts.")
 
-This is a comparison of sampled start states I went with versus always starting from tick 0. Sampled starts compensates for short rollouts to allow the model to still experience diverse levels of economy.
+This is a comparison of sampled start states I went with versus always starting from tick 0. Sampled starts compensate for short rollouts to allow the model to still experience diverse levels of economy.
 
 | Greedy eval | Sampled starts | Tick-zero only |
 |---|---:|---:|
