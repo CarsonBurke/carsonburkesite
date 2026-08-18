@@ -63,7 +63,7 @@ the goal each tick, and the policy re-picks its goal every tick. The network is 
 ## Training and Rollouts
 
 [xxscreeps](https://github.com/laverdet/xxscreeps) lets me do fast parallel rollouts. I think
-I did 12 games at once for 512 steps, and each one took under a couple of seconds. If I used
+I did 12 games at once for 512 steps, taking around a couple of seconds. If I used
 the normal Screeps engine it would have taken days to train. The speed partly avoids the
 large scale parallelism that Ben Bartlett had to use in
 [Overmind-RL](https://github.com/bencbartlett/Overmind-RL/tree/master).
