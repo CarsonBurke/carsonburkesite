@@ -35,23 +35,9 @@ export function Home() {
   );
 }
 
-function Section({
-  id,
-  title,
-  description,
-  children,
-}: {
-  id: string;
-  title: string;
-  description?: string;
-  children: ReactNode;
-}) {
+function Section({ id, children }: { id: string; children: ReactNode }) {
   return (
     <section id={id} className="mx-auto max-w-5xl scroll-mt-[4.5rem] px-4 pb-14">
-      <div className="mb-3 px-1">
-        <h2 className="title-3">{title}</h2>
-        {description && <p className="caption dimmed mt-1">{description}</p>}
-      </div>
       {children}
     </section>
   );
@@ -159,7 +145,7 @@ function Hero() {
 
 function Writing() {
   return (
-    <Section id="writing" title="Writing" description="Posts about the projects and results.">
+    <Section id="writing">
       <div className="boxed-list">
         {POSTS.map((post) => (
           <Link
@@ -168,7 +154,7 @@ function Writing() {
             className="row-activatable flex items-center gap-4 px-4 py-4 no-underline"
           >
             <div className="min-w-0 flex-1">
-              <h3 className="heading">{post.title}</h3>
+              <h2 className="heading">{post.title}</h2>
               <p className="dimmed mt-1 text-[0.95rem] leading-[1.5]">{post.summary}</p>
               <p className="caption dimmed numeric mt-2">
                 {formatDate(post.date)}, {post.minutes} min read
@@ -184,11 +170,7 @@ function Writing() {
 
 function Projects() {
   return (
-    <Section
-      id="projects"
-      title="Projects"
-      description="What I build, and the numbers I have for it."
-    >
+    <Section id="projects">
       <div className="space-y-4">
         {PROJECTS.map((project) => (
           <ProjectCard key={project.id} project={project} />
@@ -205,7 +187,7 @@ function ProjectCard({ project }: { project: Project }) {
     <article className="card overflow-hidden">
       <div className="p-5">
         <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <h3 className="title-4">{project.name}</h3>
+          <h2 className="title-4">{project.name}</h2>
           <span className="caption dimmed">{project.kicker}</span>
         </div>
 
@@ -314,7 +296,7 @@ function ProjectCard({ project }: { project: Project }) {
 
 function Smaller() {
   return (
-    <Section id="smaller" title="Smaller things" description="Other tools I wrote.">
+    <Section id="smaller">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {SMALLER_THINGS.map(({ name, note, href }) => (
           <a
@@ -337,7 +319,10 @@ function Smaller() {
 
 function About() {
   return (
-    <Section id="about" title="About">
+    <Section id="about">
+      <div className="mb-3 px-1">
+        <h2 className="title-3">About</h2>
+      </div>
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
         <div className="card space-y-4 p-5 leading-[1.65]">
           <p>
