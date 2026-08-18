@@ -179,7 +179,7 @@ export type SmallProject = {
 export const SMALLER_THINGS: SmallProject[] = [
   {
     name: "The International",
-    note: "An open source Screeps bot, written by hand. It is the teacher for the Screeps RL policy.",
+    note: "An open source Screeps bot, written by hand. It is also the teacher my Screeps RL policy.",
     href: "https://github.com/The-International-Screeps-Bot/The-International-Open-Source",
   },
   {

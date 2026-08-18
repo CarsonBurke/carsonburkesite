@@ -84,7 +84,7 @@ This is a comparison of sampled start states I went with versus always starting 
 
 ## Performance and Development
 
-Our training is a circuit of 12 environments running 512 tick rollouts, followed by 12 optimizer steps over the batch, taking about 16
+Training is a circuit of 12 environments running 512 tick rollouts, followed by 12 optimizer steps over the batch, taking about 16
 seconds on one RTX 5090. I got a lot of performance uplift from compiling (including cuda graphs), batching syncs, fusing kernels, and especially from cleaning up AI slop. Opus/Fable 5 and GPT 5.6 were immensely helpful with this project, and they are great at writing kernels and pipelines, but have a horrible sense for strategy (designing the model and how it should learn) and do not have a good intuition for where compute and memory is going. My own code review as well as detailed profiling was instrumental to get things cleaned up and well optimized.
 
 ## Limitations and Future Work

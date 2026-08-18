@@ -57,6 +57,29 @@ function Section({
   );
 }
 
+/**
+ * A reference in the bio: the phrase stays plain body text and only the icon
+ * carries the link, so the paragraph is not several coloured phrases deep. The
+ * tail word rides along in the same nowrap span, or a line break can leave the
+ * icon stranded at the start of the next line.
+ */
+function Ref({ tail, href, label }: { tail: string; href: string; label: string }) {
+  return (
+    <span className="whitespace-nowrap">
+      {tail}
+      <a
+        className="link-accent pl-[3px] align-baseline"
+        href={href}
+        aria-label={`Open ${label}`}
+        title={label}
+        {...NEW_TAB}
+      >
+        <ExternalIcon size={12} className="inline align-baseline" />
+      </a>
+    </span>
+  );
+}
+
 function Hero() {
   const toast = useToast();
 
@@ -67,26 +90,15 @@ function Hero() {
           <h1 className="title-1 text-[2.4rem] leading-[1.1] sm:text-[3rem]">Carson Burke</h1>
           <p className="mt-4 text-[1.15rem] leading-[1.55]">
             I'm a self-taught machine learning programmer and software developer. My notable
-            work includes{" "}
-            <a className="link-accent" href={REPOS.tradingBot} {...NEW_TAB}>
-              trading agents in Rust
-              <ExternalIcon size={12} className="ml-[3px] inline align-baseline" />
-            </a>
-            , a{" "}
+            work includes trading agents in{" "}
+            <Ref tail="Rust" href={REPOS.tradingBot} label="trading_bot_0 on GitHub" />, a{" "}
             <Link className="link-accent" to="/writing/screeps-reinforcement-learning">
               ViT and entity transformer that plays a whole Screeps colony
             </Link>
-            , and a{" "}
-            <a className="link-accent" href={REPOS.cleanrl} {...NEW_TAB}>
-              fork of CleanRL
-              <ExternalIcon size={12} className="ml-[3px] inline align-baseline" />
-            </a>{" "}
-            where I do many ablations, as well as private solutions for{" "}
-            <a className="link-accent" href={REPOS.kaggle} {...NEW_TAB}>
-              Kaggle challenges
-              <ExternalIcon size={12} className="ml-[3px] inline align-baseline" />
-            </a>
-            .
+            , and a fork of{" "}
+            <Ref tail="CleanRL" href={REPOS.cleanrl} label="CarsonBurke/cleanrl on GitHub" />{" "}
+            where I do many ablations, as well as private solutions for Kaggle{" "}
+            <Ref tail="challenges" href={REPOS.kaggle} label="Kaggle competitions" />.
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-2">
