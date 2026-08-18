@@ -134,10 +134,8 @@ should be able to claim, colonize and expand too. Maybe that is a project for so
 more resources than me.
 
 Construction is the open problem. Under greedy decoding the reinforced policy places no
-sites at all, while the cloned policy built 18,582 energy of them over a 40,000-tick sampled
-run and stayed at RCL2 for its trouble. Those runs discounted at `gamma = 0.995`, which is a
-200-tick effective horizon against an extension that repays over thousands of ticks. Delayed
-payoff can't be the whole explanation, because a creep body repays over roughly 1,500 ticks
-and spawning survived fine. The current 2,000-tick window tests that directly.
+sites at all, while the cloned policy built 18,582 energy of sites over a 40,000-tick sampled
+run and stayed at RCL2. Both runs discounted at `gamma = 0.995`, which is a 200-tick
+effective horizon against an extension that repays over thousands of ticks.
 
 Thanks to [Ben](https://github.com/bencbartlett/Overmind-RL/tree/master) for the inspiration.
