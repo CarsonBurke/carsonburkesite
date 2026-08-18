@@ -17,9 +17,9 @@ export const PROJECTS: Project[] = [
   {
     id: "trading-bot",
     name: "Trading bot 0",
-    kicker: "Rust, PPO, IBKR",
+    kicker: "Rust, PPO, IBKR, tch-rs",
     summary:
-      "A PPO agent that sizes positions across a portfolio of tickers, trained on historical bars from the Interactive Brokers API. It is written in Rust, including the terminal interface I use to start runs and read the results.",
+      "A variety of trading solutions including genetic algorithm parametric models, pretraining models, and reinforcement learning, trained on historical bars from the Interactive Brokers API. It is written in Rust, including the terminal interface dashboard.",
     tags: ["Rust", "tch-rs", "PPO", "Ratatui"],
     stats: [
       { label: "Parameters", value: "1.8M" },
@@ -62,8 +62,8 @@ export const PROJECTS: Project[] = [
       "One 1.57M parameter model plays an entire Screeps colony, trained with behavioural cloning and then reinforcement learning.",
     tags: ["PyTorch", "PPO", "ViT", "Transformers"],
     stats: [
-      { label: "Actor and critic", value: "1.57M and 1.49M" },
-      { label: "Parallel worlds", value: "12" },
+      { label: "Actor and critic params", value: "1.57M and 1.49M" },
+      { label: "Parallel games", value: "12" },
       { label: "Env steps per second", value: "876" },
     ],
     details: [
