@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>Carson Burke</title>
+    <meta
+      name="description"
+      content="Carson Burke — reinforcement learning, Rust, and Linux desktop software. Trading agents, a Screeps colony policy, CleanRL ablations, COSMIC applets."
+    />
+    <meta name="author" content="Carson Burke" />
+    <meta name="color-scheme" content="light dark" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Carson Burke" />
+    <meta
+      property="og:description"
+      content="Reinforcement learning, Rust, and Linux desktop software."
+    />
+    <script>
+      // Resolve the theme before first paint so a dark-mode load never flashes white.
+      (() => {
+        const stored = localStorage.getItem("theme");
+        const pref = stored === "light" || stored === "dark" ? stored : null;
+        const dark = pref
+          ? pref === "dark"
+          : window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+        const accent = localStorage.getItem("accent");
+        if (accent) document.documentElement.dataset.accent = accent;
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

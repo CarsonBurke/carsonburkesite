@@ -1,0 +1,412 @@
+@import "tailwindcss";
+
+/*
+ * Adwaita for the web.
+ *
+ * Colours, radii, metrics and type scale below are transcribed from
+ * libadwaita's own stylesheet and documentation rather than eyeballed:
+ *   colours  https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/css-variables.html
+ *   type     src/stylesheet/widgets/_labels.scss  (181/136/136/118/100/82%)
+ *   metrics  src/stylesheet/_common.scss, widgets/{_misc,_lists,_buttons,_header-bar}.scss
+ * Variable names match upstream so the mapping stays auditable.
+ */
+
+@theme {
+  --font-sans:
+    "Adwaita Sans", "Cantarell", Inter, ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Adwaita Mono", "Source Code Pro", ui-monospace, monospace;
+
+  --color-window: var(--window-bg-color);
+  --color-window-fg: var(--window-fg-color);
+  --color-view: var(--view-bg-color);
+  --color-card: var(--card-bg-color);
+  --color-headerbar: var(--headerbar-bg-color);
+  --color-sidebar: var(--sidebar-bg-color);
+  --color-popover: var(--popover-bg-color);
+  --color-accent: var(--accent-color);
+  --color-accent-bg: var(--accent-bg-color);
+  --color-accent-fg: var(--accent-fg-color);
+  --color-success: var(--success-color);
+  --color-warning: var(--warning-color);
+  --color-error: var(--error-color);
+  --color-shade: var(--shade-color);
+  --color-divider: var(--card-shade-color);
+
+  --radius-control: 9px;
+  --radius-card: 12px;
+  --radius-window: 15px;
+
+  /* libadwaita lays out on a 6px grid. */
+  --spacing: 6px;
+}
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@font-face {
+  font-family: "Adwaita Sans";
+  src: url("./assets/fonts/AdwaitaSans-Regular.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Adwaita Sans";
+  src: url("./assets/fonts/AdwaitaSans-Italic.woff2") format("woff2-variations");
+  font-weight: 100 900;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Adwaita Mono";
+  src: url("./assets/fonts/AdwaitaMono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Adwaita Mono";
+  src: url("./assets/fonts/AdwaitaMono-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light;
+
+  --accent-bg-color: #3584e4;
+  --accent-fg-color: #ffffff;
+  --accent-color: #0461be;
+
+  --window-bg-color: #fafafb;
+  --window-fg-color: rgb(0 0 6 / 80%);
+  --view-bg-color: #ffffff;
+  --headerbar-bg-color: #ffffff;
+  --headerbar-shade-color: rgb(0 0 6 / 12%);
+  --sidebar-bg-color: #ebebed;
+  --card-bg-color: #ffffff;
+  --card-shade-color: rgb(0 0 6 / 7%);
+  --dialog-bg-color: #fafafb;
+  --popover-bg-color: #ffffff;
+  --shade-color: rgb(0 0 6 / 7%);
+  --thumbnail-bg-color: #ffffff;
+
+  --success-color: #007c3d;
+  --warning-color: #905400;
+  --error-color: #c30000;
+
+  --border-opacity: 15%;
+  --dim-opacity: 55%;
+  --border-color: color-mix(in srgb, currentColor var(--border-opacity), transparent);
+
+  /* widgets/_misc.scss: the card shadow is three stacked layers, not one blur. */
+  --card-shadow:
+    0 0 0 1px rgb(0 0 6 / 3%), 0 1px 3px 1px rgb(0 0 6 / 7%),
+    0 2px 6px 2px rgb(0 0 6 / 3%);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --accent-bg-color: #3584e4;
+  --accent-color: #81d0ff;
+
+  --window-bg-color: #222226;
+  --window-fg-color: #ffffff;
+  --view-bg-color: #1d1d20;
+  --headerbar-bg-color: #2e2e32;
+  --headerbar-shade-color: rgb(0 0 6 / 36%);
+  --sidebar-bg-color: #2e2e32;
+  --card-bg-color: rgb(255 255 255 / 8%);
+  --card-shade-color: rgb(0 0 6 / 36%);
+  --dialog-bg-color: #36363a;
+  --popover-bg-color: #36363a;
+  --shade-color: rgb(0 0 6 / 25%);
+  --thumbnail-bg-color: #39393d;
+
+  --success-color: #78e9ab;
+  --warning-color: #ffc252;
+  --error-color: #ff938c;
+
+  --card-shadow: 0 0 0 1px rgb(0 0 6 / 10%), 0 1px 3px 1px rgb(0 0 6 / 20%);
+}
+
+/* GNOME's selectable accents, standalone values per theme. */
+[data-accent="teal"] {
+  --accent-bg-color: #2190a4;
+  --accent-color: #007184;
+}
+[data-theme="dark"][data-accent="teal"] {
+  --accent-color: #7bdff4;
+}
+[data-accent="green"] {
+  --accent-bg-color: #3a944a;
+  --accent-color: #15772e;
+}
+[data-theme="dark"][data-accent="green"] {
+  --accent-color: #8de698;
+}
+[data-accent="yellow"] {
+  --accent-bg-color: #c88800;
+  --accent-color: #905300;
+  --accent-fg-color: rgb(0 0 0 / 80%);
+}
+[data-theme="dark"][data-accent="yellow"] {
+  --accent-color: #ffc057;
+}
+[data-accent="orange"] {
+  --accent-bg-color: #ed5b00;
+  --accent-color: #b62200;
+}
+[data-theme="dark"][data-accent="orange"] {
+  --accent-color: #ff9c5b;
+}
+[data-accent="red"] {
+  --accent-bg-color: #e62d42;
+  --accent-color: #c00023;
+}
+[data-theme="dark"][data-accent="red"] {
+  --accent-color: #ff888c;
+}
+[data-accent="pink"] {
+  --accent-bg-color: #d56199;
+  --accent-color: #a2326c;
+}
+[data-theme="dark"][data-accent="pink"] {
+  --accent-color: #ffa0d8;
+}
+[data-accent="purple"] {
+  --accent-bg-color: #9141ac;
+  --accent-color: #8939a4;
+}
+[data-theme="dark"][data-accent="purple"] {
+  --accent-color: #fba7ff;
+}
+[data-accent="slate"] {
+  --accent-bg-color: #6f8396;
+  --accent-color: #526678;
+}
+[data-theme="dark"][data-accent="slate"] {
+  --accent-color: #bbd1e5;
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --border-opacity: 50%;
+    --dim-opacity: 90%;
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.animate-toast-in {
+  animation: toast-in 200ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    /* 15px ~= the 11pt Adwaita Sans system font at 96dpi. */
+    font-size: 15px;
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--window-bg-color);
+    color: var(--window-fg-color);
+    font-family: var(--font-sans);
+    font-optical-sizing: auto;
+    line-height: 1.4;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--accent-bg-color);
+    color: var(--accent-fg-color);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent-bg-color);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  a {
+    color: inherit;
+    text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+    text-underline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Type scale — percentages and weights from widgets/_labels.scss. */
+  .title-1 {
+    font-size: 1.81rem;
+    font-weight: 800;
+    letter-spacing: -0.015em;
+    line-height: 1.15;
+  }
+  .title-2 {
+    font-size: 1.36rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+  }
+  .title-3 {
+    font-size: 1.36rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .title-4 {
+    font-size: 1.18rem;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+  .heading {
+    font-size: 1rem;
+    font-weight: 700;
+  }
+  .caption {
+    font-size: 0.82rem;
+    line-height: 1.4;
+  }
+  .caption-heading {
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+  .dimmed {
+    opacity: var(--dim-opacity);
+  }
+  .numeric {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .card {
+    background-color: var(--card-bg-color);
+    border-radius: var(--radius-card);
+    box-shadow: var(--card-shadow);
+  }
+
+  /* AdwPreferencesGroup: a header, then a boxed list of rows. */
+  .boxed-list {
+    background-color: var(--card-bg-color);
+    border-radius: var(--radius-card);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+  }
+
+  .boxed-list > * + * {
+    border-top: 1px solid var(--card-shade-color);
+  }
+
+  .row-activatable {
+    transition:
+      background-color 120ms ease-out,
+      transform 120ms ease-out;
+  }
+  .row-activatable:hover {
+    background-color: color-mix(in srgb, currentColor 4%, transparent);
+  }
+  .row-activatable:active {
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  /* widgets/_buttons.scss: 9px radius, bold label, currentColor state mixes. */
+  .adw-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 5px 12px;
+    border: none;
+    border-radius: var(--radius-control);
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+    color: inherit;
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 120ms ease-out;
+  }
+  .adw-button:hover {
+    background-color: color-mix(in srgb, currentColor 15%, transparent);
+  }
+  .adw-button:active {
+    background-color: color-mix(in srgb, currentColor 30%, transparent);
+  }
+  .adw-button.flat {
+    background-color: transparent;
+  }
+  .adw-button.flat:hover {
+    background-color: color-mix(in srgb, currentColor 10%, transparent);
+  }
+  .adw-button.suggested {
+    background-color: var(--accent-bg-color);
+    color: var(--accent-fg-color);
+  }
+  .adw-button.suggested:hover {
+    background-color: color-mix(in srgb, var(--accent-bg-color) 90%, black);
+  }
+  .adw-button.pill {
+    border-radius: 9999px;
+    padding: 8px 18px;
+  }
+  .adw-button.circular {
+    border-radius: 9999px;
+    padding: 0;
+    width: 34px;
+    justify-content: center;
+  }
+
+  .osd-blur {
+    background-color: color-mix(in srgb, var(--headerbar-bg-color) 82%, transparent);
+    backdrop-filter: blur(14px) saturate(1.4);
+  }
+
+  .separator {
+    background-color: var(--border-color);
+  }
+
+  .pill-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 9999px;
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+    font-size: 0.82rem;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .link-accent {
+    color: var(--accent-color);
+    font-weight: 700;
+    text-decoration-color: color-mix(in srgb, var(--accent-color) 35%, transparent);
+  }
+}
