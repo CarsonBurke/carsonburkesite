@@ -387,6 +387,34 @@
     justify-content: center;
   }
 
+  /* widgets/_buttons.scss: linked buttons share one outline and square their inner corners. */
+  .adw-linked {
+    display: inline-flex;
+    align-items: stretch;
+  }
+  .adw-linked > .adw-button {
+    border-radius: 0;
+  }
+  .adw-linked > .adw-button:first-child {
+    border-start-start-radius: var(--radius-control);
+    border-end-start-radius: var(--radius-control);
+  }
+  .adw-linked > .adw-button:last-child {
+    border-start-end-radius: var(--radius-control);
+    border-end-end-radius: var(--radius-control);
+  }
+  .adw-linked > .adw-button.pill:first-child {
+    border-start-start-radius: 9999px;
+    border-end-start-radius: 9999px;
+  }
+  .adw-linked > .adw-button.pill:last-child {
+    border-start-end-radius: 9999px;
+    border-end-end-radius: 9999px;
+  }
+  .adw-linked > .adw-button + .adw-button {
+    box-shadow: inset 1px 0 var(--border-color);
+  }
+
   .osd-blur {
     background-color: color-mix(in srgb, var(--headerbar-bg-color) 82%, transparent);
     backdrop-filter: blur(14px) saturate(1.4);

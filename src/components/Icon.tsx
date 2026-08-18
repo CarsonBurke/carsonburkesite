@@ -49,6 +49,15 @@ export function ExternalIcon({ size = 16, className }: IconProps) {
   );
 }
 
+/* GNOME's media-playback-start symbolic: a filled triangle, no surrounding circle. */
+export function PlayIcon({ size = 16, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path fill="currentColor" d="M4.5 2.6a.7.7 0 0 1 1.06-.6l7.2 5.4a.75.75 0 0 1 0 1.2l-7.2 5.4a.7.7 0 0 1-1.06-.6Z" />
+    </svg>
+  );
+}
+
 export function ChevronRightIcon({ size = 16, className }: IconProps) {
   return (
     <svg {...base(size)} className={className}>

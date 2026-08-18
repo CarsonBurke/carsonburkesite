@@ -6,12 +6,12 @@ import { ExternalIcon } from "./Icon.tsx";
 
 const FIGURE_SHADOW = "0 0 0 1px var(--card-shade-color)";
 
-/** ```pipeline — one stage per line, `·`-separated fields, drawn as chained chips. */
+/** ```pipeline: one stage per line, fields separated by `|`, drawn as chained chips. */
 function Pipeline({ source }: { source: string }) {
   const stages = source
     .trim()
     .split("\n")
-    .map((line) => line.split("·").map((part) => part.trim()));
+    .map((line) => line.split("|").map((part) => part.trim()));
 
   return (
     <div className="my-8 flex flex-wrap items-stretch gap-2">
@@ -44,7 +44,34 @@ function Pipeline({ source }: { source: string }) {
   );
 }
 
-/** ```gallery — `file.webp :: caption [:: alt]` per line, laid out as a figure row. */
+/** ```youtube: `videoId :: caption` on one line, embedded at 16 by 9. */
+function Youtube({ source }: { source: string }) {
+  const [id = "", caption = ""] = source
+    .trim()
+    .split("::")
+    .map((part) => part.trim());
+
+  return (
+    <figure className="my-8">
+      <div
+        className="card overflow-hidden"
+        style={{ aspectRatio: "16 / 9", boxShadow: FIGURE_SHADOW }}
+      >
+        <iframe
+          className="h-full w-full border-0"
+          src={`https://www.youtube-nocookie.com/embed/${id}`}
+          title={caption || "Video"}
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowFullScreen
+        />
+      </div>
+      {caption && <figcaption className="caption dimmed mt-2">{caption}</figcaption>}
+    </figure>
+  );
+}
+
+/** ```gallery: `file.webp :: caption [:: alt]` per line, laid out as a figure row. */
 function Gallery({ source }: { source: string }) {
   const items = source
     .trim()
@@ -194,6 +221,7 @@ const components: Components = {
 
     if (language === "pipeline") return <Pipeline source={source} />;
     if (language === "gallery") return <Gallery source={source} />;
+    if (language === "youtube") return <Youtube source={source} />;
     if (!language)
       return (
         <code
@@ -214,7 +242,8 @@ const components: Components = {
   pre: ({ children, node }) => {
     const language = fenceLanguage(node);
     // Block-level custom fences render their own layout; a card would box them.
-    if (language === "pipeline" || language === "gallery") return <>{children}</>;
+    if (language === "pipeline" || language === "gallery" || language === "youtube")
+      return <>{children}</>;
     return <div className="card my-6 overflow-hidden">{children}</div>;
   },
 };

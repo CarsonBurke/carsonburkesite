@@ -1,8 +1,8 @@
 import { isRouteErrorResponse, useRouteError } from "react-router";
 
 /**
- * Without this, a failed chunk load — the normal outcome of navigating after a
- * redeploy — renders react-router's developer stack trace to a visitor.
+ * A failed chunk load is the normal outcome of navigating after a redeploy. Without
+ * this page, react-router would show its developer stack trace to a visitor.
  */
 export function ErrorPage() {
   const error = useRouteError();

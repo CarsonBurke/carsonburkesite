@@ -6,7 +6,7 @@ export type Project = {
   kicker: string;
   summary: string;
   tags: string[];
-  stats: { label: string; value: string }[];
+  stats?: { label: string; value: string }[];
   details: string[];
   caveat?: string;
   links: { label: string; href: string; external?: boolean }[];
@@ -17,21 +17,20 @@ export const PROJECTS: Project[] = [
   {
     id: "trading-bot",
     name: "Trading bot 0",
-    kicker: "Rust · PPO · IBKR",
+    kicker: "Rust, PPO, IBKR",
     summary:
-      "A PPO agent that sizes positions across a portfolio from historical IBKR bars. Rust the whole way down, including the TUI I use to start runs and read them.",
+      "A PPO agent that sizes positions across a portfolio of tickers, trained on historical bars from the Interactive Brokers API. It is written in Rust, including the terminal interface I use to start runs and read the results.",
     tags: ["Rust", "tch-rs", "PPO", "Ratatui"],
     stats: [
       { label: "Parameters", value: "1.8M" },
       { label: "Tickers at once", value: "6" },
-      { label: "vs index, episode 51", value: "+11.79%" },
-      { label: "VRAM", value: "~12 GB" },
+      { label: "Best benchmarked episode", value: "+11.8% vs index" },
     ],
     details: [
-      "Timesnet-style convolutions over percentage price deltas, then a grouped-query temporal attention stack with a streamed prefix/suffix cache so a long history is not re-encoded every step.",
-      "One continuous action per ticker in [-1, 1]. Buy, sell, hold and direction are consequences of position sizing rather than a separate discrete head.",
-      "Actor and critic share the convolutional features and split into their own fully-connected paths, so fitting the value function cannot drag the policy trunk around.",
-      "The project started as programmatic strategies tuned by a genetic algorithm. Those are still in the repo, and the RL agent beat them by enough that I stopped maintaining them.",
+      "The observation encoder runs Timesnet style convolutions over percentage price deltas, then a grouped query attention stack with a streamed cache, so a long history is not re-encoded on every step.",
+      "The action is one continuous value per ticker between -1 and 1. Buying, selling and holding are results of the position size rather than separate outputs.",
+      "The actor and critic share the convolutional features and then split into their own fully connected paths, so fitting the value function does not move the policy trunk.",
+      "The repository also holds the earlier programmatic strategies, with parameters tuned by a genetic algorithm. The RL agent scored higher, so I stopped extending them.",
     ],
     caveat: "Backtests on historical bars, not live money.",
     links: [
@@ -44,57 +43,35 @@ export const PROJECTS: Project[] = [
     media: [
       {
         ...media("tb-6-ticker-assets-benchmarked.webp"),
-        alt: "Terminal UI plotting held assets, cash and total portfolio value against a benchmark index",
+        alt: "Terminal interface plotting held assets, cash and total portfolio value against a benchmark index",
         caption:
-          "Six tickers in the training TUI: assets red, cash green, total blue, benchmark index yellow.",
+          "Six tickers in the training interface. Assets are red, cash is green, the total is blue and the benchmark index is yellow.",
       },
       {
         ...media("tb-msft-buy-sell.webp"),
-        alt: "Terminal UI marking buy and sell decisions along a price series",
-        caption:
-          "Buys and sells the agent placed on a randomly chosen active stretch of MSFT.",
+        alt: "Terminal interface marking buy and sell decisions along a price series",
+        caption: "Buys and sells the agent placed on an active stretch of MSFT.",
       },
     ],
-  },
-  {
-    id: "redact",
-    name: "Redact",
-    kicker: "Day job · Electron · TypeScript",
-    summary:
-      "Redact deletes what you have already posted — across more than 35 platforms — with the scanning and deleting done on your own machine instead of on somebody's server.",
-    tags: ["TypeScript", "React", "Electron", "Design systems"],
-    stats: [
-      { label: "Users, per redact.dev", value: "1M+" },
-      { label: "Supported services", value: "35+" },
-      { label: "Desktop targets", value: "Win · macOS · Linux" },
-    ],
-    details: [
-      "I work on the desktop client: the shared component library the app is assembled from, the data-broker dashboards and sortable tables, the local archive search surfaces, and the selects and date pickers everything else depends on.",
-      "Also per-platform deletion engines, and the test-data tooling that makes them verifiable — you cannot check that a cleanup worked without something there to clean up.",
-      "And the public service pages and FAQs: what Redact can remove on each platform, kept in step with what the app can actually do.",
-      "A recurring constraint: stay debuggable without ever putting a user's content or credentials into a log line.",
-    ],
-    links: [{ label: "redact.dev", href: "https://redact.dev", external: true }],
   },
   {
     id: "screeps-rl",
     name: "Screeps RL",
-    kicker: "PyTorch · PPO · behavioural cloning",
+    kicker: "PyTorch, PPO, behavioural cloning",
     summary:
-      "One 1.57M-parameter policy plays an entire Screeps colony: every creep, spawn and tower gets an action on every simulator tick. Cloned from my old bot, then trained with PPO against the real engine.",
+      "One policy with 1.57M parameters plays an entire Screeps colony, giving every creep, spawn and tower an action on every simulator tick. I cloned it from my old bot, then trained it with PPO against the real game engine.",
     tags: ["PyTorch", "PPO", "ViT", "Transformers"],
     stats: [
-      { label: "Actor / critic", value: "1.57M / 1.49M" },
-      { label: "Held-out score, five scenarios", value: "82.7" },
+      { label: "Actor and critic", value: "1.57M and 1.49M" },
       { label: "Parallel worlds", value: "12" },
-      { label: "Env steps/s, compiled", value: "876" },
+      { label: "Env steps per second", value: "876" },
     ],
     details: [
-      "Actions are goals, not keystrokes: harvest that source, transfer to that structure, claim that controller. A deterministic executor handles pathfinding and traffic, so the network never spends capacity rediscovering what a search does better.",
-      "Legality is part of the action definition. Candidate masks come from the engine's own validators, so an illegal action is a defect rather than noise — 2 of them in a recorded 344,078.",
-      "The critic predicts a 409-bin HL-Gauss distribution over signed-log returns instead of a scalar, because an empty room and a mature colony are not the same regression problem.",
-      "Start states come from an event-stratified reservoir. Two runs matched on checkpoint, seed and optimizer and differing only in start states scored 82.7 against 20.0 summed across five held-out scenarios.",
-      "CUDA-graphing only the per-tick forward, and leaving the minibatch path eager, moved collection from about 531 to about 876 environment steps per second on one RTX 5090.",
+      "Actions are goals rather than keystrokes, such as harvest that source, transfer to that structure, or claim that controller. A deterministic executor handles pathfinding and traffic, so the network does not spend capacity on a problem a search already solves.",
+      "Legality is part of the action definition. Candidate masks come from the engine's own validators, so an illegal action is a defect to report rather than noise to learn around. There were 2 in a recorded 344,078.",
+      "The critic predicts a 409 bin HL-Gauss distribution over signed log returns instead of a single number, because an empty room and a mature colony are not the same regression problem.",
+      "Start states come from an event stratified reservoir. Two runs matched on checkpoint, seed and optimizer, and differing only in start states, scored 82.7 against 20.0 summed over five held out scenarios.",
+      "CUDA graphing only the per tick forward pass, and leaving the minibatch path eager, moved collection from about 531 to about 876 environment steps per second on one RTX 5090.",
     ],
     links: [
       { label: "Read the write-up", href: "/writing/screeps-reinforcement-learning" },
@@ -103,38 +80,42 @@ export const PROJECTS: Project[] = [
         href: "https://github.com/CarsonBurke/xxscreeps/tree/main/samples/rl",
         external: true,
       },
+      {
+        label: "Video",
+        href: "https://youtu.be/rFsW3197xaY",
+        external: true,
+      },
     ],
     media: [
       {
         ...media("screeps-ppo-economy.webp"),
-        alt: "Screeps room with the reinforced policy saturating both energy sources and hauling to the controller",
+        alt: "Screeps room with the reinforced policy harvesting both energy sources and hauling to the controller",
         caption:
-          "The reinforced policy: about 30 creeps, both sources saturated, a hauling lane to the controller.",
+          "The reinforced policy running about 30 creeps, with both sources harvested and a hauling lane to the controller.",
       },
     ],
   },
   {
     id: "cleanrl",
     name: "CleanRL experiments",
-    kicker: "Ablations · falsification",
+    kicker: "PyTorch, ablations",
     summary:
-      "A fork of CleanRL used as a lab. About 25 named research families, each a directory of single-file variants with a ledger and a kill rule written down before the runs start.",
+      "A fork of CleanRL that I use as a lab. It holds about 25 research families, and each one is a directory of single file variants with a ledger and a kill rule written before the runs start.",
     tags: ["PyTorch", "PPO", "TD7", "MuJoCo"],
     stats: [
       { label: "Research families", value: "~25" },
-      { label: "Commits in the fork", value: "1,123" },
       { label: "Standard run", value: "8M steps" },
     ],
     details: [
-      "Best result so far: a state-dependent noise head on TD7, entropy confined to the actor loss. 17,122 against 16,043 at 1M steps, ahead of the baseline at every checkpoint.",
-      "Bounded Beta noise was the more interesting hypothesis and lost anyway. Both single-change fixes for its late-game deficit regressed, so I closed the line and wrote down that the Gaussian edge is still mechanistically unexplained.",
-      "An HL-Gauss critic on TD7 cost 30% and got killed at 65k steps, 5,885 against 8,086. Right-sizing the support made it slightly worse, which falsified my own support-geometry explanation and pointed at the control path instead.",
-      "Fourteen transformer-trunk variants: token-MLP plus Peri-LN plus Xavier on the trunk reached 4,843.9 ±66.0, against 3,962.8 ±158.5 for pre-norm alone. Xavier on the heads, borrowed from language-model init practice, never got off the floor at −141.4.",
-      "A cheap ridge probe retired a whole planned direction: the JEPA latent explained about 25 fewer points of value variance than the raw trunk features at every checkpoint, and deleting the encoder entirely matched the best version that kept it.",
-      "I also audited one of my own families and found its best result roughly 14x below my own frontier, which invalidated every comparison inside its ledger. That is written down too.",
+      "The best result so far is a state dependent noise head on TD7, with entropy confined to the actor loss. It scored 17,122 against 16,043 at 1M steps, and led the baseline at every checkpoint.",
+      "Bounded Beta noise was the more interesting hypothesis and lost anyway. Both single change fixes for its late game deficit regressed, so I closed the line and recorded that the Gaussian advantage is still unexplained.",
+      "An HL-Gauss critic on TD7 cost 30% more compute and was killed at 65k steps, scoring 5,885 against 8,086. Right sizing the support made it slightly worse, which falsified my support geometry explanation.",
+      "Across fourteen transformer trunk variants, a token MLP with Peri-LN and Xavier initialisation on the trunk reached 4,843.9 with a range of 66.0, against 3,962.8 with a range of 158.5 for pre-norm alone. Xavier on the heads scored -141.4.",
+      "A ridge probe closed a planned direction early. The JEPA latent explained about 25 fewer points of value variance than the raw trunk features at every checkpoint, and removing the encoder matched the best version that kept it.",
+      "I audited one of my own families and found its best result about 14 times below my own frontier, which invalidated the comparisons inside its ledger. The audit is in the ledger too.",
     ],
     caveat:
-      "One seed, HalfCheetah-v4, means over the last 20 or 30 episodes depending on the ledger. The ± figures are within-run episode intervals, not seed variance — engineering ablations, not benchmark claims.",
+      "Single seed runs on HalfCheetah-v4, averaged over the last 20 or 30 episodes depending on the ledger. The ranges are within run episode intervals rather than seed variance, so these are engineering ablations rather than benchmark claims.",
     links: [
       { label: "Fork", href: "https://github.com/CarsonBurke/cleanrl", external: true },
       {
@@ -147,19 +128,16 @@ export const PROJECTS: Project[] = [
   {
     id: "minimon-applet",
     name: "minimon-applet",
-    kicker: "COSMIC · Rust · iced",
+    kicker: "COSMIC, Rust, iced",
     summary:
-      "A COSMIC panel applet showing CPU, memory, network, disk and GPU. I contribute upstream, mostly on the question of what actually earns space in your panel.",
+      "A COSMIC panel applet that shows CPU, memory, network, disk and GPU usage. I contribute upstream, mostly on which readouts earn space in a panel.",
     tags: ["Rust", "iced", "COSMIC", "Flatpak"],
-    stats: [
-      { label: "Upstream stars", value: "118" },
-      { label: "Language", value: "Rust" },
-    ],
+    stats: [{ label: "Upstream stars", value: "118" }],
     details: [
-      "Configurable content order, so panel items sit where you put them instead of where the code happened to build them.",
-      "Conditional display for temperature and GPU readouts: set a floor, and the item stays out of the panel until it matters.",
-      "Ring-chart fill percentage, a higher refresh-rate ceiling, and a fix for the index underflow that reordering could trigger.",
-      "Flatpak packaging plus the post-install steps, because an applet nobody can add to their panel is not shipped.",
+      "Configurable content order, so panel items appear where you put them.",
+      "Conditional display for temperature and GPU readouts. You set a floor, and the item stays hidden below it.",
+      "Ring chart fill percentage, a higher refresh rate ceiling, and a fix for the index underflow that reordering could trigger.",
+      "Flatpak packaging and the post install steps needed to add the applet to a panel.",
     ],
     links: [
       {
@@ -185,12 +163,12 @@ export type SmallProject = {
 export const SMALLER_THINGS: SmallProject[] = [
   {
     name: "The International",
-    note: "The open-source Screeps bot I used to play with. It is now the teacher the RL policy is cloned from.",
+    note: "An open source Screeps bot, written by hand. It is the teacher for the Screeps RL policy.",
     href: "https://github.com/The-International-Screeps-Bot/The-International-Open-Source",
   },
   {
     name: "mlqueue",
-    note: "A machine-wide queue that admits ML jobs by how many can share the GPU. Every run above goes through it.",
+    note: "A machine wide queue for ML jobs, which admits runs by how many can share the GPU.",
     href: "https://github.com/CarsonBurke/mlqueue",
   },
   {
@@ -200,12 +178,17 @@ export const SMALLER_THINGS: SmallProject[] = [
   },
   {
     name: "screeps-arena-videoizer",
-    note: "Patches the Screeps Arena client so replays can be recorded headlessly and batched into video.",
+    note: "A patched Screeps Arena client that records replays headlessly and batches them into video.",
     href: "https://github.com/CarsonBurke/screeps-arena-videoizer",
   },
   {
     name: "tts",
-    note: "A cross-platform speech CLI, so long runs can tell me what happened without me watching.",
+    note: "A cross platform speech CLI that reads out status updates from long runs.",
     href: "https://github.com/CarsonBurke/tts",
+  },
+  {
+    name: "tensorwatch",
+    note: "A supervisor and single window dashboard for long lived TensorBoard instances.",
+    href: "https://github.com/CarsonBurke/tensorwatch",
   },
 ];

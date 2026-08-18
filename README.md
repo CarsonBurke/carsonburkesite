@@ -1,10 +1,10 @@
 # carsonburkesite
 
-My personal site: [carsonburke.github.io/carsonburkesite](https://carsonburke.github.io/carsonburkesite/).
+My personal site, at [carsonburke.github.io/carsonburkesite](https://carsonburke.github.io/carsonburkesite/).
 
-Vite + React + Tailwind, wearing the GNOME design language. Colours, radii, metrics and the
-type scale are transcribed from libadwaita's own stylesheet rather than approximated, so the
-mapping stays checkable:
+It is built with Vite, React and Tailwind, and it uses the GNOME design language. The
+colours, radii, metrics and type scale are transcribed from libadwaita's own stylesheet
+rather than approximated, so each value can be checked against its source.
 
 | What | Source |
 |---|---|
@@ -14,10 +14,10 @@ mapping stays checkable:
 | Boxed lists, cards, header bars | [`widgets/`](https://gitlab.gnome.org/GNOME/libadwaita/-/tree/main/src/stylesheet/widgets) |
 | Layout and behaviour | [GNOME HIG](https://developer.gnome.org/hig/) |
 
-Theme follows the system preference by default. The header's palette button opens a
-stand-in for GNOME Settings › Appearance: light, dark or system, plus the nine system
-accent colours. An explicit choice persists in `localStorage`; `system` keeps tracking the
-OS.
+The theme follows the system preference by default. The palette button in the header opens a
+small version of GNOME Settings, Appearance, offering light, dark or system, plus the nine
+system accent colours. An explicit choice is saved in `localStorage`, and `system` keeps
+tracking the operating system.
 
 ## Development
 
@@ -29,13 +29,13 @@ bun run build      # tsc --noEmit, then vite build into dist/
 bun run preview
 ```
 
-`BASE_PATH=/ bun run build` builds for a root-hosted domain instead of the project-pages
-subpath.
+Running `BASE_PATH=/ bun run build` builds for a root-hosted domain instead of the project
+pages subpath.
 
 ## Writing a post
 
-Drop a markdown file in `src/content/posts/`. The filename is the slug, frontmatter is flat
-`key: value` lines:
+Add a markdown file to `src/content/posts/`. The filename is the slug, and the frontmatter is
+a set of flat `key: value` lines.
 
 ```markdown
 ---
@@ -44,28 +44,33 @@ date: 2026-08-17
 summary: One sentence for the index row.
 tags: RL, PPO
 code: https://github.com/...
+video: https://youtu.be/...
 discussion: https://reddit.com/...
 ---
 ```
 
-Beyond GitHub-flavoured markdown there are two fences:
+Beyond GitHub flavoured markdown there are three extra fences.
 
-- ` ```gallery ` — one `file.webp :: caption` per line, laid out as a figure row. Images are
-  referenced by bare filename and resolved from `src/assets/media/`.
-- ` ```pipeline ` — one stage per line, `·`-separated fields, drawn as chained chips.
+- ` ```gallery ` takes one `file.webp :: caption` per line and lays the images out as a
+  figure row. Images are referenced by bare filename and resolved from `src/assets/media/`.
+- ` ```pipeline ` takes one stage per line, with fields separated by `|`, and draws them as
+  chained chips.
+- ` ```youtube ` takes `videoId :: caption` and embeds the video at 16 by 9.
 
-Reading time is computed from the body; images use `loading="lazy"`.
+Reading time is computed from the body, and images are loaded lazily with their intrinsic
+size set at build time.
 
 ## Deployment
 
-Pushes to `main` build and publish to GitHub Pages via
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). Pages has no SPA fallback,
-so the build writes `dist/404.html` as a copy of `index.html` — without it, a hard load of
-`/writing/<slug>` would 404.
+A push to `main` builds and publishes to GitHub Pages through
+[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). Pages has no SPA fallback, so
+the build writes `dist/404.html` as a copy of `index.html`. Without that copy, a hard load of
+`/writing/<slug>` would return a 404.
 
 ## Licences
 
-Site code is MIT (`LICENSE`). Adwaita Sans and Adwaita Mono in `src/assets/fonts/` are
-subset from [adwaita-fonts](https://gitlab.gnome.org/GNOME/adwaita-fonts) and remain under
-the SIL Open Font License 1.1 (`src/assets/fonts/LICENSE-adwaita-fonts.txt`). Screenshots
-and recordings belong to the projects they came from.
+The site code is MIT licensed, in `LICENSE`. Adwaita Sans and Adwaita Mono in
+`src/assets/fonts/` are subset from
+[adwaita-fonts](https://gitlab.gnome.org/GNOME/adwaita-fonts) and remain under the SIL Open
+Font License 1.1, included as `src/assets/fonts/LICENSE-adwaita-fonts.txt`. The favicon is my
+GitHub profile picture. Screenshots and recordings belong to the projects they came from.

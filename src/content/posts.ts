@@ -11,6 +11,7 @@ export type Post = {
   summary: string;
   tags: string[];
   code?: string;
+  video?: string;
   discussion?: string;
   body: string;
   minutes: number;
@@ -42,6 +43,7 @@ function parse(slug: string, raw: string): Post {
     summary: required("summary"),
     tags: (fields.tags ?? "").split(",").map((tag) => tag.trim()).filter(Boolean),
     code: fields.code,
+    video: fields.video,
     discussion: fields.discussion,
     body,
     minutes: Math.max(1, Math.round(body.split(/\s+/).length / 200)),

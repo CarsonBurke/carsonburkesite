@@ -27,34 +27,6 @@ export function App() {
       <main id="content" ref={main} tabIndex={-1} className="outline-none">
         <Outlet />
       </main>
-      <Footer />
     </ToastProvider>
-  );
-}
-
-function Footer() {
-  return (
-    <footer className="mx-auto max-w-3xl px-4 pb-16">
-      <div className="separator mb-6 h-px" />
-      <p className="caption dimmed">
-        Built with Vite, React and Tailwind, then dressed in{" "}
-        <a
-          className="link-accent"
-          href="https://gnome.pages.gitlab.gnome.org/libadwaita/doc/main/css-variables.html"
-        >
-          libadwaita&rsquo;s own colours
-        </a>{" "}
-        and the{" "}
-        <a className="link-accent" href="https://developer.gnome.org/hig/">
-          GNOME HIG
-        </a>
-        . Type is Adwaita Sans and Adwaita Mono, subset from the GNOME originals under the
-        SIL Open Font License 1.1.{" "}
-        <a className="link-accent" href="https://github.com/CarsonBurke/carsonburkesite">
-          Source
-        </a>
-        .
-      </p>
-    </footer>
   );
 }

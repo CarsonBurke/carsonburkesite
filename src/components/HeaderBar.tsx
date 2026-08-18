@@ -32,7 +32,7 @@ function useActiveSection(enabled: boolean) {
           if (entry.isIntersecting) seen.add(entry.target.id);
           else seen.delete(entry.target.id);
         }
-        // Nothing tracked in view — the hero or a section the nav ignores.
+        // Nothing tracked is in view, so this is the hero or a section the nav ignores.
         const first = SECTIONS.find(({ id }) => seen.has(id));
         setActive(first?.id ?? null);
       },
