@@ -11,6 +11,7 @@ import {
 import { useToast } from "../components/Toast.tsx";
 import { POSTS, formatDate } from "../content/posts.ts";
 import { PROJECTS, SMALLER_THINGS, type Project } from "../data/projects.ts";
+import { NEW_TAB, REPOS } from "../lib/links.ts";
 
 const EMAIL = "carsonburke22@gmail.com";
 
@@ -65,16 +66,34 @@ function Hero() {
         <div>
           <h1 className="title-1 text-[2.4rem] leading-[1.1] sm:text-[3rem]">Carson Burke</h1>
           <p className="mt-4 text-[1.15rem] leading-[1.55]">
-            I write machine learning code and the tools around it. Most of my work is
-            reinforcement learning, including trading agents in Rust, a network that plays a
-            whole Screeps colony, and a fork of CleanRL where I keep a written record of
-            every ablation. I also write Linux desktop software.
+            I'm a self-taught machine learning programmer and software developer. My notable
+            work includes{" "}
+            <a className="link-accent" href={REPOS.tradingBot} {...NEW_TAB}>
+              trading agents in Rust
+              <ExternalIcon size={12} className="ml-[3px] inline align-baseline" />
+            </a>
+            , a{" "}
+            <Link className="link-accent" to="/writing/screeps-reinforcement-learning">
+              ViT and entity transformer that plays a whole Screeps colony
+            </Link>
+            , and a{" "}
+            <a className="link-accent" href={REPOS.cleanrl} {...NEW_TAB}>
+              fork of CleanRL
+              <ExternalIcon size={12} className="ml-[3px] inline align-baseline" />
+            </a>{" "}
+            where I do many ablations, as well as private solutions for{" "}
+            <a className="link-accent" href={REPOS.kaggle} {...NEW_TAB}>
+              Kaggle challenges
+              <ExternalIcon size={12} className="ml-[3px] inline align-baseline" />
+            </a>
+            .
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-2">
             <a
               className="adw-button pill suggested no-underline"
-              href="https://github.com/CarsonBurke"
+              href={REPOS.github}
+              {...NEW_TAB}
             >
               <GithubIcon />
               GitHub
@@ -201,7 +220,7 @@ function ProjectCard({ project }: { project: Project }) {
             {project.media.map(({ src, width, height, alt, caption }) => (
               <figure key={src} className="m-0">
                 {/* Terminal captures are far wider than the column, so a click gets the pixels back. */}
-                <a href={src} target="_blank" rel="noreferrer" className="block">
+                <a href={src} className="block" {...NEW_TAB}>
                   <img
                     src={src}
                     width={width}
@@ -222,7 +241,7 @@ function ProjectCard({ project }: { project: Project }) {
         <div className="mt-5 flex flex-wrap items-center gap-2">
           {project.links.map(({ label, href, external }) =>
             external ? (
-              <a key={href} className="adw-button no-underline" href={href}>
+              <a key={href} className="adw-button no-underline" href={href} {...NEW_TAB}>
                 {label}
                 <ExternalIcon size={13} className="dimmed" />
               </a>
@@ -288,6 +307,7 @@ function Smaller() {
             key={href}
             href={href}
             className="card row-activatable flex flex-col gap-1 p-4 no-underline"
+            {...NEW_TAB}
           >
             <span className="heading flex items-center gap-2">
               {name}
@@ -307,9 +327,9 @@ function About() {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
         <div className="card space-y-4 p-5 leading-[1.65]">
           <p>
-            I'm Carson. I train reinforcement learning models on one desktop GPU, so an idea
-            has to be cheap to test and cheap to abandon. I write the kill rule down before a
-            run starts, and failed runs stay in the record next to the ones that worked.
+            I'm a self-taught machine learning enthusiast who trains models on my own
+            hardware. I work on reinforcement learning, and on the tooling that makes a run
+            worth reading afterwards.
           </p>
           <p>
             The rest of my time goes into systems code in Rust and TypeScript. Recent work
@@ -325,7 +345,8 @@ function About() {
         <div className="boxed-list self-start">
           <a
             className="row-activatable flex items-center gap-3 px-4 py-3 no-underline"
-            href="https://github.com/CarsonBurke"
+            href={REPOS.github}
+            {...NEW_TAB}
           >
             <GithubIcon size={15} className="dimmed" />
             <span className="flex-1">GitHub</span>
@@ -340,7 +361,8 @@ function About() {
           </a>
           <a
             className="row-activatable flex items-center gap-3 px-4 py-3 no-underline"
-            href="https://github.com/CarsonBurke/carsonburkesite"
+            href={REPOS.site}
+            {...NEW_TAB}
           >
             <span className="flex-1">Source for this site</span>
             <ExternalIcon size={12} className="dimmed" />

@@ -1,6 +1,7 @@
 import type { Element } from "hast";
 import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { NEW_TAB } from "../lib/links.ts";
 import { media } from "../lib/media.ts";
 import { ExternalIcon } from "./Icon.tsx";
 
@@ -160,12 +161,7 @@ const components: Components = {
   a: ({ href, children }) => {
     const external = href?.startsWith("http") ?? false;
     return (
-      <a
-        className="link-accent"
-        href={href}
-        target={external ? "_blank" : undefined}
-        rel={external ? "noreferrer" : undefined}
-      >
+      <a className="link-accent" href={href} {...(external ? NEW_TAB : {})}>
         {children}
         {external && <ExternalIcon size={12} className="ml-[3px] inline align-baseline" />}
       </a>

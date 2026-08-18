@@ -36,8 +36,8 @@ screeps-ppo-economy.webp :: After PPO. About 30 creeps, both sources harvested, 
 
 ## What's in the model
 
-To get more technical, it's a model with about 1.5M parameters. A ViT reads patches of room
-tiles, covering terrain, sources and the controller, and an entity transformer reads the
+To get more technical, the model has 1.5M parameters. A ViT reads patches of room
+tiles (4 rooms max) covering terrain, sources and the controller, and an entity transformer reads the
 entities, covering creeps, spawns and towers. Each entity gets a head that outputs its
 action.
 [AlphaStar](https://www.nature.com/articles/s41586-019-1724-z) was part of the inspiration,
@@ -56,17 +56,11 @@ Actor | 1.57M params | masked per-entity heads
 Executor | pathfinding | traffic | engine intents
 ```
 
-An action is a goal rather than a keystroke, such as harvest that source, transfer to that
-structure, or claim that controller. The executor takes one navigation or work step toward
-the goal each tick, and the policy re-picks its goal every tick, so it can abandon a route
-halfway. The network then never has to rediscover pathfinding, which a search does better.
+An actions are generally goals, such as harvest that source (and move if necessary), transfer to that
+structure, or claim that controller. The executor takes one move towards or action on
+the goal each tick, and the policy re-picks its goal every tick. The network is saved from difficult intricacies such as pathfinding, which saved me a lot of training time and params, and is a lot like tool calls with LLMs.
 
-The other half of the action definition is legality. A transfer is legal until the target
-fills, and a tile is legal until something occupies it, so the candidate masks come from the
-engine's own validators. An illegal action becomes a defect to report rather than noise to
-learn around. There were two of them in a recorded 344,078.
-
-## Where the training signal comes from
+## Training and Rollouts
 
 [xxscreeps](https://github.com/laverdet/xxscreeps) lets me do fast parallel rollouts. I think
 I did 12 games at once for 512 steps, and each one took under a couple of seconds. If I used

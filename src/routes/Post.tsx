@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router";
 import { ExternalIcon, PlayIcon } from "../components/Icon.tsx";
 import { Markdown } from "../components/Markdown.tsx";
 import { POSTS, formatDate, type Post as PostData } from "../content/posts.ts";
+import { NEW_TAB } from "../lib/links.ts";
 import { NotFound } from "./NotFound.tsx";
 
 export function Post() {
@@ -63,19 +64,19 @@ function SourceLinks({ post }: { post: PostData }) {
   return (
     <div className="mt-5 flex flex-wrap items-center gap-2">
       {post.video && (
-        <a className="adw-button suggested no-underline" href={post.video}>
+        <a className="adw-button suggested no-underline" href={post.video} {...NEW_TAB}>
           <PlayIcon size={13} />
           Watch the run
         </a>
       )}
       {post.code && (
-        <a className="adw-button no-underline" href={post.code}>
+        <a className="adw-button no-underline" href={post.code} {...NEW_TAB}>
           Code
           <ExternalIcon size={13} className="dimmed" />
         </a>
       )}
       {post.discussion && (
-        <a className="adw-button no-underline" href={post.discussion}>
+        <a className="adw-button no-underline" href={post.discussion} {...NEW_TAB}>
           Discussion on Reddit
           <ExternalIcon size={13} className="dimmed" />
         </a>

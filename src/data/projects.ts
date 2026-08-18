@@ -124,6 +124,14 @@ export const PROJECTS: Project[] = [
         external: true,
       },
     ],
+    media: [
+      {
+        ...media("cleanrl-ablations.webp"),
+        alt: "Episodic return curves for many HalfCheetah runs drawn on one dark chart",
+        caption:
+          "Episodic return for 115 of the HalfCheetah-v4 ablation runs in the fork, averaged into 25,000 step bins. The band along the bottom is runs that never learned.",
+      },
+    ],
   },
   {
     id: "minimon-applet",
@@ -149,6 +157,14 @@ export const PROJECTS: Project[] = [
         label: "Upstream",
         href: "https://github.com/cosmic-utils/minimon-applet",
         external: true,
+      },
+    ],
+    media: [
+      {
+        ...media("minimon-applet.webp"),
+        alt: "COSMIC panel showing CPU, memory, network, disk and GPU readouts, with the applet popover open below them",
+        caption:
+          "The panel readouts and the expanded popover, from the upstream README.",
       },
     ],
   },
