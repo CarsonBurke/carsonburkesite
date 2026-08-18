@@ -100,7 +100,7 @@ export const PROJECTS: Project[] = [
     name: "CleanRL experiments",
     kicker: "PyTorch, ablations",
     summary:
-      "A fork of CleanRL that I use as a lab. It holds about 25 research families, and each one is a directory of single file variants with a ledger and a kill rule written before the runs start.",
+      "A fork of CleanRL that I use as a lab. It holds about 25 research families that explore different optimization concepts like lejepa, latent ",
     tags: ["PyTorch", "PPO", "TD7", "MuJoCo"],
     stats: [
       { label: "Research families", value: "~25" },
@@ -138,7 +138,7 @@ export const PROJECTS: Project[] = [
     name: "minimon-applet",
     kicker: "COSMIC, Rust, iced",
     summary:
-      "A COSMIC panel applet that shows CPU, memory, network, disk and GPU usage. I contribute upstream, mostly on which readouts earn space in a panel.",
+      "A COSMIC panel applet that shows CPU, memory, network, disk and GPU usage which I contribute to upstream.",
     tags: ["Rust", "iced", "COSMIC", "Flatpak"],
     stats: [{ label: "Upstream stars", value: "118" }],
     details: [
@@ -179,7 +179,7 @@ export type SmallProject = {
 export const SMALLER_THINGS: SmallProject[] = [
   {
     name: "The International",
-    note: "An open source Screeps bot, written by hand. It is also the teacher my Screeps RL policy.",
+    note: "An open source Screeps bot, written by hand. It is also the teacher my Screeps RL.",
     href: "https://github.com/The-International-Screeps-Bot/The-International-Open-Source",
   },
   {
@@ -199,12 +199,12 @@ export const SMALLER_THINGS: SmallProject[] = [
   },
   {
     name: "tts",
-    note: "A cross platform speech CLI that reads out status updates from long runs.",
+    note: "A cross platform text to speech CLI, which I use for reading out status updates.",
     href: "https://github.com/CarsonBurke/tts",
   },
   {
     name: "tensorwatch",
-    note: "A supervisor and single window dashboard for long lived TensorBoard instances.",
+    note: "A TensorBoard multiplexer and job queue UI.",
     href: "https://github.com/CarsonBurke/tensorwatch",
   },
 ];

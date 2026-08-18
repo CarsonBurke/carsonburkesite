@@ -340,13 +340,7 @@ function About() {
         <div className="card space-y-4 p-5 leading-[1.65]">
           <p>
             I'm a self-taught machine learning enthusiast who trains models on my own
-            hardware. I work on reinforcement learning, and on the tooling that makes a run
-            worth reading afterwards.
-          </p>
-          <p>
-            The rest of my time goes into systems code in Rust and TypeScript. Recent work
-            includes trading infrastructure, a queue for my own training jobs, terminal
-            interfaces for reading results, and patches to the Linux desktop I use.
+            hardware. I work on pretraining, reinforcement learning, and tooling.
           </p>
           <p>
             If you want to talk about any of it, send me an email or open an issue on one of
