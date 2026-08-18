@@ -34,7 +34,7 @@ screeps-bc-building.webp :: Cloned from the teacher. About 33 creeps, constructi
 screeps-ppo-economy.webp :: After PPO. About 30 creeps, both sources harvested, a hauling lane to the controller, RCL3 in 7,600 ticks, and no construction sites at all.
 ```
 
-## What's in the model
+## Solution Details
 
 To get more technical, the model has 1.5M parameters. A ViT reads patches of room
 tiles (4 rooms max) covering terrain, sources and the controller, and an entity transformer reads the
@@ -56,7 +56,7 @@ Actor | 1.57M params | masked per-entity heads
 Executor | pathfinding | traffic | engine intents
 ```
 
-An actions are generally goals, such as harvest that source (and move if necessary), transfer to that
+Actions are generally goals, such as harvest that source (and move if necessary), transfer to that
 structure, or claim that controller. The executor takes one move towards or action on
 the goal each tick, and the policy re-picks its goal every tick. The network is saved from difficult intricacies such as pathfinding, which saved me a lot of training time and params, and is a lot like tool calls with LLMs.
 
@@ -68,68 +68,37 @@ the normal Screeps engine it would have taken days to train. The speed partly av
 large scale parallelism that Ben Bartlett had to use in
 [Overmind-RL](https://github.com/bencbartlett/Overmind-RL/tree/master).
 
-The thing that mattered most, though, wasn't throughput. Twelve environments that all start
-at tick zero advance in lockstep, so every update draws from the same narrow band of a
-20,000-tick timeline. Anything that only appears later, such as remote hauling, stops
-appearing at all and gets unlearned.
+An important part of this setup is that runs start from initial states from a 20,000-tick timeline. This allows the model to see diverse states without having to play them start to finish each time. Runs went for 1.25 million steps, or about 2 hours wall-clock.
 
 ![Two PPO runs sharing a cloned checkpoint, seed, optimizer and code fingerprint, differing only in start states](screeps-training-curves.webp "Same checkpoint, same seed, same optimizer, same code. The only difference is where episodes start.")
 
-Both runs stop at update 204 and global step 1,259,520. The tick-zero-only run falls to 8
-creeps by update 60 and settles near a score of 4. The reservoir run holds 27 to 35 creeps
-and climbs past 15. Held-out evaluation agrees, summed over the five fresh-world scenarios
-further down.
+The two runs above are matched on checkpoint, seed, optimizer and code, and both stop at
+update 204 and global step 1,259,520. The only difference is where their episodes start.
+Held-out evaluation on fresh worlds that neither run trained on, summed over five scenarios,
+agrees with the curves.
 
 | | Reservoir | Tick-zero only |
 |---|---:|---:|
-| Score per tick, five scenarios summed | 82.7 | 20.0 |
+| Score per tick | 82.7 | 20.0 |
 | Controller progress rate | 27.2 | 0.1 |
 | Remote-room harvesting | 32,228 | 0 |
 | Remote energy delivered home | 311 | 0 |
 | Room claims | 2 | 0 |
 
-So PPO now draws start states from an event stratified reservoir. Half the fleet runs
-untouched full lifecycles, the rest resume from snapshots of recent runs, both successful
-and failed, and a small teacher lane bridges phases the policy can't reach yet. Snapshots
-are stratified by event rather than sampled periodically, because periodic sampling
-overrepresents long plateaus. Evaluation never uses snapshots, so a policy is never scored
-from states it could not reach on its own.
-
-## What it costs
+## Performance and Development
 
 A 512-tick update across 12 environments, followed by 12 optimizer steps, takes about 16
-seconds on one RTX 5090, and 7.7 of those seconds are collection. Collection is thousands of
-small launch-bound calls, one per simulated tick at batch 12, so CUDA graphing the per tick
-forward pass and leaving the minibatch path eager took it from about 531 to about 876
-environment steps per second. The capture pool for the minibatch path wanted roughly
-28.5 GB and didn't fit, which is why that half stays eager.
-
-Scores on ten fresh 20,000-tick worlds that neither training nor teacher collection ever
-touched, decoded greedily, measuring `harvested_energy + controller_progress` per tick:
-
-| Scenario | Score/tick |
-|---|---:|
-| `empty`, one spawn in a bare room | 17.1 |
-| `seed_creep`, one seeded worker | 18.5 |
-| `seed_claimer`, plus 2 room claims | 17.4 |
-| `seed_full`, an inherited mature colony | 13.1 |
-| `seed_outpost`, a neutral outpost | 16.6 |
+seconds on one RTX 5090. I got a lot of performance uplift from compiling (including cuda graphs), batching syncs, fusing kernels, and cleaning up AI slop. Opus/Fable 5 and GPT 5.6 were immense help with this project, and they are great at writing kernels and pipelines, but have a horrible sense for strategy (designing the model and how it should learn) and do not have a good intuition for where performance is going. My own code review as well as detailed profiling as instrumental to get things cleaned up and well optimized.
 
 One caveat applies to every number and clip above. They all predate the current objective
 and the move to a single teacher. Back then cloning learned from my hand-written planner as
 well as The International, and now the planner is only a baseline to beat. A rerun from the
 real teacher alone is in progress.
 
-## What I'd do with a bigger budget
+## Limitations and Future Work
 
 There were a lot of compromises to get it training fast on my single RTX 5090. With a bigger
 budget I would have done longer rollouts to let it build and explore more game features. It
-should be able to claim, colonize and expand too. Maybe that is a project for someone with
-more resources than me.
-
-Construction is the open problem. Under greedy decoding the reinforced policy places no
-sites at all, while the cloned policy built 18,582 energy of sites over a 40,000-tick sampled
-run and stayed at RCL2. Both runs discounted at `gamma = 0.995`, which is a 200-tick
-effective horizon against an extension that repays over thousands of ticks.
+should be able to claim, colonize and expand too. Notably, horizon investments like construction would likely become prevelant. I suspect this is a project for someone with more compute than me.
 
 Thanks to [Ben](https://github.com/bencbartlett/Overmind-RL/tree/master) for the inspiration.
