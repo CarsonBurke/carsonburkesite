@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { Link } from "react-router";
+import { Link, useHref } from "react-router";
 import {
   ChevronDownIcon,
   ChevronRightIcon,
@@ -61,38 +61,30 @@ function Section({
  * A reference in the bio: the phrase stays plain body text and only the icon
  * carries the link, so the paragraph is not several coloured phrases deep. The
  * tail word rides along in the same nowrap span, or a line break can leave the
- * icon stranded at the start of the next line. A chevron goes to this site's own
- * writing, an external icon opens someone else's page in a tab.
+ * icon stranded at the start of the next line. Every reference behaves the same
+ * way the icon claims, including the one pointing at this site's own writing.
  */
-function Ref({
-  tail,
-  label,
-  ...target
-}: { tail: string; label: string } & ({ href: string } | { to: string })) {
-  const shared = {
-    className: "link-accent pl-[3px] align-baseline",
-    title: label,
-  };
+function Ref({ tail, href, label }: { tail: string; href: string; label: string }) {
   return (
     <span className="whitespace-nowrap">
       {tail}
-      {"to" in target ? (
-        <Link {...shared} to={target.to} aria-label={`Read ${label}`}>
-          {/* A stroked chevron reads lighter than the filled-outline external
-              icon, so it runs a shade larger to match it. */}
-          <ChevronRightIcon size={14} className="inline align-baseline" />
-        </Link>
-      ) : (
-        <a {...shared} href={target.href} aria-label={`Open ${label}`} {...NEW_TAB}>
-          <ExternalIcon size={12} className="inline align-baseline" />
-        </a>
-      )}
+      <a
+        className="link-accent pl-[3px] align-baseline"
+        href={href}
+        aria-label={`Open ${label}`}
+        title={label}
+        {...NEW_TAB}
+      >
+        <ExternalIcon size={12} className="inline align-baseline" />
+      </a>
     </span>
   );
 }
 
 function Hero() {
   const toast = useToast();
+  // A raw href needs the deploy's base in front of it; the router knows it.
+  const postHref = useHref("/writing/screeps-reinforcement-learning");
 
   return (
     <section className="mx-auto max-w-5xl px-4 pt-14 pb-12">
@@ -104,11 +96,7 @@ function Hero() {
             work includes trading agents in{" "}
             <Ref tail="Rust" href={REPOS.tradingBot} label="trading_bot_0 on GitHub" />, a ViT
             and entity transformer that plays a whole Screeps{" "}
-            <Ref
-              tail="colony"
-              to="/writing/screeps-reinforcement-learning"
-              label="Reinforcement learning in Screeps"
-            />
+            <Ref tail="colony" href={postHref} label="Reinforcement learning in Screeps" />
             , and a fork of{" "}
             <Ref tail="CleanRL" href={REPOS.cleanrl} label="CarsonBurke/cleanrl on GitHub" />{" "}
             where I do many ablations, as well as private solutions for Kaggle{" "}
