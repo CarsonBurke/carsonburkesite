@@ -59,7 +59,7 @@ export const PROJECTS: Project[] = [
     name: "Screeps RL",
     kicker: "PyTorch, PPO, behavioural cloning",
     summary:
-      "One policy with 1.57M parameters plays an entire Screeps colony, giving every creep, spawn and tower an action on every simulator tick. I cloned it from my old bot, then trained it with PPO against the real game engine.",
+      "One 1.57M parameter model plays an entire Screeps colony, trained with behavioural cloning and then reinforcement learning.",
     tags: ["PyTorch", "PPO", "ViT", "Transformers"],
     stats: [
       { label: "Actor and critic", value: "1.57M and 1.49M" },
@@ -100,7 +100,7 @@ export const PROJECTS: Project[] = [
     name: "CleanRL experiments",
     kicker: "PyTorch, ablations",
     summary:
-      "A fork of CleanRL that I use as a lab. It holds about 25 research families that explore different optimization concepts like lejepa, latent ",
+      "A fork of CleanRL that I use as a lab. It holds about 25 research families that explore different optimization concepts like lejepa, latent prediction, successor features, better exploration, and in general testing and modifying solutions from papers I find compelling.",
     tags: ["PyTorch", "PPO", "TD7", "MuJoCo"],
     stats: [
       { label: "Research families", value: "~25" },

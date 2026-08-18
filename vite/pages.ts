@@ -21,7 +21,10 @@ const SITE = {
 const MARKER = "<!--meta-->";
 
 type PageMeta = {
+  /** The card's headline. Unfurlers print og:site_name above it already. */
   title: string;
+  /** The browser tab, where the site name has to be spelled out. */
+  documentTitle: string;
   description: string;
   /** Route without the base or a leading slash: "" for home. */
   path: string;
@@ -48,7 +51,7 @@ function headTags(page: PageMeta, base: string): string {
   const url = `${SITE.origin}${base}${page.path}`;
   const large = page.image.width >= 600;
   const lines = [
-    `    <title>${escape(page.title)}</title>`,
+    `    <title>${escape(page.documentTitle)}</title>`,
     tag("name", "description", page.description),
     `    <link rel="canonical" href="${escape(url)}" />`,
     tag("name", "author", SITE.name),
@@ -167,6 +170,7 @@ function readPosts(): Post[] {
 function homeMeta(base: string): PageMeta {
   return {
     title: SITE.name,
+    documentTitle: SITE.name,
     description: SITE.description,
     path: "",
     image: {
@@ -218,7 +222,8 @@ export function pages(): Plugin {
         const card = await buildCard(post, outDir);
         const meta = headTags(
           {
-            title: `${post.title}, ${SITE.name}`,
+            title: post.title,
+            documentTitle: `${post.title}, ${SITE.name}`,
             description: post.summary,
             path: `writing/${post.slug}/`,
             image: card
