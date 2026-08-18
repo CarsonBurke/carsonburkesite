@@ -157,7 +157,7 @@ function Writing() {
               <h2 className="heading">{post.title}</h2>
               <p className="dimmed mt-1 text-[0.95rem] leading-[1.5]">{post.summary}</p>
               <p className="caption dimmed numeric mt-2">
-                {formatDate(post.date)}, {post.minutes} min read
+                {formatDate(post.date)} • {post.minutes} min read • handwritten
               </p>
             </div>
             <ChevronRightIcon className="dimmed shrink-0" />
@@ -271,6 +271,7 @@ function ProjectCard({ project }: { project: Project }) {
             backgroundColor: "color-mix(in srgb, currentColor 3%, transparent)",
           }}
         >
+          <p className="caption dimmed mb-3">ai summary</p>
           <ul className="grid gap-3 lg:grid-cols-2 lg:gap-x-8">
             {project.details.map((detail) => (
               <li key={detail} className="flex gap-3 leading-[1.6]">

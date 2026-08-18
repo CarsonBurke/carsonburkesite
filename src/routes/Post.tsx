@@ -35,7 +35,7 @@ export function Post() {
           {post.title}
         </h1>
         <p className="caption dimmed numeric mt-3">
-          {formatDate(post.date)}, {post.minutes} min read
+          {formatDate(post.date)} • {post.minutes} min read • handwritten
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           {post.tags.map((tag) => (
