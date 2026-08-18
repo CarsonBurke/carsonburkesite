@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router";
+import avatar from "../assets/avatar.webp";
 import { AppearanceMenu } from "./AppearanceMenu.tsx";
-import { ArrowLeftIcon } from "./Icon.tsx";
 
 const SECTIONS = [
   { id: "writing", label: "Writing" },
@@ -66,17 +66,24 @@ export function HeaderBar() {
       </a>
 
       <div className="mx-auto flex min-h-[47px] max-w-5xl items-center gap-1 px-3 py-[6px] sm:gap-2">
-        {onHome ? (
-          <Link to="/" className="heading shrink-0 no-underline">
-            <span className="sm:hidden">Carson</span>
-            <span className="hidden sm:inline">Carson Burke</span>
-          </Link>
-        ) : (
-          <Link to="/" className="adw-button flat no-underline">
-            <ArrowLeftIcon />
-            <span className="hidden sm:inline">Home</span>
-          </Link>
-        )}
+        {/* One brand control on every route: the avatar and the name go home. */}
+        <Link
+          to="/"
+          aria-label="Carson Burke"
+          className="heading flex shrink-0 items-center gap-2 no-underline"
+        >
+          {/* 24px with a 22% radius, the same corner the favicon is masked with. */}
+          <img
+            src={avatar}
+            width={24}
+            height={24}
+            alt=""
+            className="h-[24px] w-[24px] shrink-0 rounded-[5px]"
+          />
+          {/* Under 360px the avatar carries the link alone so the nav still fits. */}
+          <span className="hidden min-[360px]:inline sm:hidden">Carson</span>
+          <span className="hidden sm:inline">Carson Burke</span>
+        </Link>
 
         <nav className="ml-auto flex items-center gap-0.5 sm:gap-1" aria-label="Sections">
           {SECTIONS.map(({ id, label }) =>

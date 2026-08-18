@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useParams } from "react-router";
-import { ExternalIcon, PlayIcon } from "../components/Icon.tsx";
+import { ArrowLeftIcon, ExternalIcon, PlayIcon } from "../components/Icon.tsx";
 import { Markdown } from "../components/Markdown.tsx";
 import { POSTS, formatDate, type Post as PostData } from "../content/posts.ts";
 import { NEW_TAB } from "../lib/links.ts";
@@ -23,9 +23,14 @@ export function Post() {
   return (
     <article className="mx-auto max-w-[46rem] px-4 pt-12 pb-16">
       <header>
-        <p className="caption-heading mb-2" style={{ color: "var(--accent-color)" }}>
+        {/* The eyebrow doubles as the way back to the index it came from. */}
+        <Link
+          to="/#writing"
+          className="caption-heading dimmed mb-2 inline-flex items-center gap-1.5 no-underline hover:underline"
+        >
+          <ArrowLeftIcon size={13} />
           Writing
-        </p>
+        </Link>
         <h1 className="title-1 text-[2.1rem] leading-[1.15] sm:text-[2.6rem]">
           {post.title}
         </h1>

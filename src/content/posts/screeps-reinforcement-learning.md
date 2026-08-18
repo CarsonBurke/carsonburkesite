@@ -72,12 +72,9 @@ An important part of this setup is that runs start from initial states from a 20
 
 ![Two PPO runs sharing a cloned checkpoint, seed, optimizer and code fingerprint, differing only in start states](screeps-training-curves.webp "Same checkpoint, same seed, same optimizer, same code. The only difference is where episodes start.")
 
-The two runs above are matched on checkpoint, seed, optimizer and code, and both stop at
-update 204 and global step 1,259,520. The only difference is where their episodes start.
-Held-out evaluation on fresh worlds that neither run trained on, summed over five scenarios,
-agrees with the curves.
+This is a comparison of sampled start states I went with versus always starting from tick 0. Sampled starts compensates for short rollouts to allow the model to still experience diverse levels of economy.
 
-| | Reservoir | Tick-zero only |
+| | Sampled starts | Tick-zero only |
 |---|---:|---:|
 | Score per tick | 82.7 | 20.0 |
 | Controller progress rate | 27.2 | 0.1 |
@@ -87,18 +84,13 @@ agrees with the curves.
 
 ## Performance and Development
 
-A 512-tick update across 12 environments, followed by 12 optimizer steps, takes about 16
-seconds on one RTX 5090. I got a lot of performance uplift from compiling (including cuda graphs), batching syncs, fusing kernels, and cleaning up AI slop. Opus/Fable 5 and GPT 5.6 were immense help with this project, and they are great at writing kernels and pipelines, but have a horrible sense for strategy (designing the model and how it should learn) and do not have a good intuition for where performance is going. My own code review as well as detailed profiling as instrumental to get things cleaned up and well optimized.
-
-One caveat applies to every number and clip above. They all predate the current objective
-and the move to a single teacher. Back then cloning learned from my hand-written planner as
-well as The International, and now the planner is only a baseline to beat. A rerun from the
-real teacher alone is in progress.
+Our training is a circuit of 12 environments running 512 tick rollouts, followed by 12 optimizer steps over the batch, taking about 16
+seconds on one RTX 5090. I got a lot of performance uplift from compiling (including cuda graphs), batching syncs, fusing kernels, and especially from cleaning up AI slop. Opus/Fable 5 and GPT 5.6 were immensely helpful with this project, and they are great at writing kernels and pipelines, but have a horrible sense for strategy (designing the model and how it should learn) and do not have a good intuition for where compute and memory is going. My own code review as well as detailed profiling was instrumental to get things cleaned up and well optimized.
 
 ## Limitations and Future Work
 
 There were a lot of compromises to get it training fast on my single RTX 5090. With a bigger
-budget I would have done longer rollouts to let it build and explore more game features. It
-should be able to claim, colonize and expand too. Notably, horizon investments like construction would likely become prevelant. I suspect this is a project for someone with more compute than me.
+budget I would have done longer rollouts to let it build and explore more game features; long-horizon investments like construction would likely become optimal. It
+should be able to claim, colonize and expand too. Sadly, I suspect this is a project for someone with more compute than me.
 
 Thanks to [Ben](https://github.com/bencbartlett/Overmind-RL/tree/master) for the inspiration.
