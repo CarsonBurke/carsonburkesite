@@ -1,6 +1,6 @@
 # carsonburkesite
 
-My personal site, at [carsonburke.github.io/carsonburkesite](https://carsonburke.github.io/carsonburkesite/).
+My personal site, at [carsonburke.com](https://carsonburke.com/).
 
 It is built with Vite, React and Tailwind, and it uses the GNOME design language. The
 colours, radii, metrics and type scale are transcribed from libadwaita's own stylesheet
@@ -23,14 +23,11 @@ tracking the operating system.
 
 ```bash
 bun install
-bun run dev        # http://localhost:5173/carsonburkesite/
+bun run dev        # http://localhost:5173/
 bun run typecheck
 bun run build      # tsc --noEmit, then vite build into dist/
 bun run preview
 ```
-
-Running `BASE_PATH=/ bun run build` builds for a root-hosted domain instead of the project
-pages subpath.
 
 ## Writing a post
 
@@ -62,10 +59,10 @@ size set at build time.
 
 ## Deployment
 
-A push to `main` builds and publishes to GitHub Pages through
-[`.github/workflows/deploy.yml`](.github/workflows/deploy.yml). Pages has no SPA fallback, so
-the build writes `dist/404.html` as a copy of `index.html`. Without that copy, a hard load of
-`/writing/<slug>` would return a 404.
+Vercel hosts the production site at [carsonburke.com](https://carsonburke.com/).
+`bunx vercel --prod` builds and deploys the current checkout. The build writes
+`dist/404.html` as a copy of `index.html`, so a hard load of an unknown client route
+still reaches React Router.
 
 ## Licences
 

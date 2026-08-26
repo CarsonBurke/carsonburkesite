@@ -34,8 +34,7 @@ function mediaSizes(): Plugin {
 }
 
 export default defineConfig({
-  // Project pages live under /<repo>/. Override with BASE_PATH=/ for a custom domain.
-  base: process.env.BASE_PATH ?? "/carsonburkesite/",
+  base: process.env.BASE_PATH ?? "/",
   plugins: [react(), tailwindcss(), mediaSizes(), pages()],
   build: {
     target: "es2022",
