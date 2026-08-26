@@ -14,8 +14,7 @@ const SITE = {
   name: "Carson Burke",
   description:
     "Machine learning, Rust, and Linux desktop software. Trading agents, a Screeps colony policy, CleanRL ablations, COSMIC applets.",
-  // Pages serves this project under /<repo>/; override both for a custom domain.
-  origin: process.env.SITE_ORIGIN ?? "https://carsonburke.github.io",
+  origin: process.env.SITE_ORIGIN ?? "https://carsonburke.com",
 };
 
 const MARKER = "<!--meta-->";
@@ -186,10 +185,10 @@ function homeMeta(base: string): PageMeta {
 }
 
 /**
- * GitHub Pages has no SPA rewrite: an unknown path returns 404.html, and a 404
- * status is also why a shared post link used to unfurl as nothing. Writing a
- * real page per post gives crawlers a 200 with the post's own title, summary
- * and card, and the 404 copy keeps deep links working for everything else.
+ * Static hosts return 404.html for unknown paths rather than applying an SPA
+ * rewrite. Writing a real page per post gives crawlers a 200 with the post's
+ * own title, summary and card, and the 404 copy keeps every other deep link
+ * working.
  */
 export function pages(): Plugin {
   let base = "/";
@@ -234,9 +233,9 @@ export function pages(): Plugin {
           base,
         );
         const page = template.replace(home, meta);
-        // Pages resolves an extensionless request from <name>.html and a
-        // directory request from its index.html, and a shared link may carry
-        // either shape, so both exist with the same bytes.
+        // Static hosts commonly resolve an extensionless request from
+        // <name>.html and a directory request from its index.html. A shared
+        // link may carry either shape, so both exist with the same bytes.
         mkdirSync(join(outDir, "writing", post.slug), { recursive: true });
         writeFileSync(join(outDir, "writing", `${post.slug}.html`), page);
         writeFileSync(join(outDir, "writing", post.slug, "index.html"), page);
