@@ -27,14 +27,13 @@ export const PROJECTS: Project[] = [
       { label: "Best benchmarked episode", value: "+11.8% vs index" },
     ],
     details: [
-      "Prices reach the model as 6,000 percentage deltas per ticker, embedded in 240 patches and read by a three layer grouped query attention trunk with rotary positions and four query heads to one key value head.",
-      "Alongside the prices I cross attend in ten FRED series, countdowns to the next jobs, CPI, FOMC and GDP releases, and earnings figures down to EPS surprise. One function builds the observation for both training and live inference, so the two paths cannot drift.",
-      "FRED dates a release without timing it. Each one stays hidden until the following NYSE open, which keeps a number the market had not seen out of the observation.",
-      "The action is a target portfolio weight, drawn from a Beta distribution on 0 to 1, with cash taking the rest. Buying, selling and holding are what rebalancing toward that weight looks like, and the book is long only.",
-      "Actor and critic share the whole trunk and separate only at the readout, where two learned queries pool the patch embeddings into one vector each. Only the critic learns for the first 100 episodes, which warms up its 255 bin value distribution against a policy that is not moving.",
-      "The genetic algorithm strategies came first and are still in the repository. Their 96 symbol universe splits 4/1/1 into train, validation and test, and the numbers I report for them come from the test split. The RL agent scored higher, so I stopped extending them.",
+      "A transformer reads 6,000 steps of price history per ticker alongside macro and fundamental context, and PPO trains it to hold a target portfolio weight. Buying, selling and holding all fall out of rebalancing toward that weight.",
+      "The whole stack is Rust, from the Interactive Brokers ingest through the tch-rs training loop to the terminal dashboard I watch runs in.",
+      "Anything with a release date is joined point in time, so the agent never sees a macro figure before the market did. Lookahead is the easiest way to make a backtest look better than the strategy is.",
+      "The repository also holds the programmatic strategies that came first, tuned over 600 generations by a genetic algorithm and scored on held out symbols. The RL agent went further, so that is where the work went.",
     ],
-    caveat: "Backtests on historical bars, not live money.",
+    caveat:
+      "The index is an equal weight buy and hold of the same tickers over the same episode. Backtests on historical bars, not live money.",
     links: [
       {
         label: "Repository",
@@ -69,11 +68,10 @@ export const PROJECTS: Project[] = [
       { label: "Env steps per second", value: "876" },
     ],
     details: [
-      "Actions are goals rather than keystrokes, such as harvest that source, transfer to that structure, or claim that controller. A deterministic executor handles pathfinding and traffic, which saved me a lot of training time and parameters.",
-      "Candidate masks come from the engine's own validators, so an illegal action is a bug to fix rather than noise to learn around. Out of 344,078 actions I recorded, 2 were illegal.",
-      "I have the critic predict a 409 bin HL-Gauss distribution over signed log returns, because a scalar head has to fit an empty room and a mature colony with one regression.",
-      "Rollouts start from states drawn out of a 20,000 tick timeline, stratified by event. Two runs matched on checkpoint, seed and optimizer, differing only in their start states, scored 82.7 against 20.0 under greedy evaluation.",
-      "CUDA graphing only the per tick forward pass, and leaving the minibatch path eager, moved collection from about 531 to about 876 environment steps per second on one RTX 5090.",
+      "Behavioural cloning from my hand written bot first, then PPO against the real game engine. The reward only covers harvesting and upgrading, and the rest is meant to be emergent.",
+      "Actions are goals rather than keystrokes, such as harvest that source or claim that controller, and a deterministic executor handles pathfinding and traffic. It works a lot like tool calls with an LLM, and it saved a lot of training time and parameters.",
+      "Twelve games run in parallel on xxscreeps instead of the official engine, and each starts from a state sampled across a 20,000 tick timeline rather than always from tick zero. Sampled starts were worth 82.7 against 20.0 in a greedy evaluation.",
+      "The reinforced policy harvests both sources, runs a hauling lane to the controller, and reaches RCL3 in 7,600 ticks, where the cloned policy was still at RCL2 after 40,000.",
     ],
     links: [
       { label: "Read the write-up", href: "/writing/screeps-reinforcement-learning" },
@@ -109,16 +107,13 @@ export const PROJECTS: Project[] = [
       { label: "Standard run", value: "8M steps" },
     ],
     details: [
-      "IDBD never actually fired. Its step size meta learning sat at the initial 0.05 for all 8M steps, so everything filed under it was really per parameter SGD plus per head gradient clipping, which a plain SGD control then reproduced at 500k. The version I got to act scored 2,212 against 3,712.",
-      "The best variant so far is a state dependent noise head on TD7, at 17,122 against the baseline's 16,043 by 1M steps, and never behind at a checkpoint. Its entropy term stays in the actor loss, because moving it into the backup cost 14 to 15% on the Gaussian and Beta policies alike.",
-      "Bounded Beta noise was level with the Gaussian baseline at 200k and ahead at 300k, then fell behind and stayed there. Both single change fixes for the late game deficit regressed, so I closed the line and recorded the gap as unexplained.",
-      "I killed an HL-Gauss critic on TD7 at 65k steps, 5,885 against 8,086. Right sizing the support made it slightly worse, which falsified my support geometry explanation. The 51 bin version never learned at all, its minimum climbing to meet its maximum once bin width passed the action value gaps.",
-      "Across fourteen transformer trunk variants, a token MLP with Peri-LN, Xavier initialisation on the trunk and a clean embedding path reached 4,843.9 plus or minus 66.0 at 6.5M steps, against 3,962.8 plus or minus 158.5 at 8M for pre-norm alone. Xavier on the heads scored -141.4.",
-      "A ridge probe closed a planned direction before I ran it. The JEPA latent explained about 25 fewer points of value variance than the raw trunk features at every checkpoint, and deleting the encoder scored 9,953 against 10,071 for the best variant that kept it.",
-      "I audited one of my own families and found its best result about 14 times below this repository's frontier. That voided the value judgments in its ledger, though the mechanism contrasts still hold. The audit is in the ledger too.",
+      "Ideas out of papers I find compelling, reimplemented on one standard harness so their results are comparable. Each family gets an append only ledger, and every run is registered with a prediction and a kill bar before it starts.",
+      "The strongest result so far is a state dependent noise head on TD7, at 17,122 against the baseline's 16,043 by 1M steps and never behind at a checkpoint.",
+      "On the architecture side, a token MLP trunk with Peri-LN and a clean embedding path reached 4,843.9 against 3,962.8 for pre-norm alone, across fourteen variants.",
+      "Runs go through a machine wide queue I wrote that admits them by how many can share the GPU, which is what keeps one card busy across this many experiments.",
     ],
     caveat:
-      "Single seed runs on HalfCheetah-v4, averaged over the last 20 or 30 episodes depending on the ledger. The plus or minus figures are 95% confidence intervals on the within run episode mean rather than seed variance, so these are engineering ablations rather than benchmark claims.",
+      "Single seed runs on HalfCheetah-v4, scored on the last 20 or 30 episodes depending on the ledger, so these are engineering ablations rather than benchmark claims.",
     links: [
       { label: "Fork", href: "https://github.com/CarsonBurke/cleanrl", external: true },
       {
@@ -148,12 +143,9 @@ export const PROJECTS: Project[] = [
       { label: "Upstream stars", value: "119" },
     ],
     details: [
-      "I rebuilt the settings popup upstream. One long scrolling page became a COSMIC style overview with a page per sensor, and a tab bar for the sensors that report more than one reading.",
-      "Icons and text labels are set per sensor instead of by one global toggle, and the numeric readout is now called a value, so it no longer shares a name with the label beside it.",
-      "Panel content order is configurable, up and down a row at a time, including the bounds fix for pressing up on the first item. That used to underflow.",
-      "A sensor the machine does not have drops out of the reorder list instead of sitting there dead. That covers CPU temperature in a virtual machine, or a GPU the backend cannot read.",
-      "I added a minimum temperature for ring charts, so the fill runs from 30 degrees up to the chip's critical temperature instead of leaving the bottom third unused.",
-      "I did the Flatpak packaging too, including the application id Flathub requires and the install and post install steps for getting the applet onto a panel.",
+      "My largest piece of it is the settings redesign, where one long scrolling page became a COSMIC style overview with a page per sensor.",
+      "Most of the rest is per sensor configuration in place of global toggles, covering icon and label visibility, panel content order, and a temperature floor for the ring charts.",
+      "I did the Flatpak packaging as well, including the application id Flathub requires and the install steps that go with it.",
     ],
     links: [
       {
