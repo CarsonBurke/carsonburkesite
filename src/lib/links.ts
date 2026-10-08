@@ -9,5 +9,5 @@ export const REPOS = {
   site: "https://github.com/CarsonBurke/carsonburkesite",
   tradingBot: "https://github.com/CarsonBurke/trading_bot_0",
   cleanrl: "https://github.com/CarsonBurke/cleanrl",
-  kaggle: "https://www.kaggle.com/competitions",
+  kaggle: "https://www.kaggle.com/marvintmb",
 } as const;
