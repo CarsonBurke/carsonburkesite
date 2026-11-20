@@ -174,7 +174,7 @@ function Hero() {
             , and a fork of{" "}
             <Ref tail="CleanRL" href={REPOS.cleanrl} label="CarsonBurke/cleanrl on GitHub" />{" "}
             where I do many ablations, as well as private solutions for Kaggle{" "}
-            <Ref tail="challenges" href={REPOS.kaggle} label="Kaggle competitions" />.
+            <Ref tail="challenges" href={REPOS.kaggle} label="MarvinTMB on Kaggle" />.
           </p>
 
           <div className="mt-7 flex flex-wrap items-center gap-2">
